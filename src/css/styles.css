@@ -1,4 +1,4 @@
-p {
-	color: red;
-	font-weight: bold;
+#map {
+	width: 100vw;
+	height: 100vh;
 }
