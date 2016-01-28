@@ -18,6 +18,8 @@ gulp.task('bower-scripts', function(){
 			'modernizr.js',
 			'jquery.js',
 			'foundation.js',
+			'foundation.joyride.js',
+			'jquery.cookie.js',
 			'knockout.js'
 		]))
 		.pipe(concat('vendors.js'))
@@ -63,6 +65,12 @@ gulp.task('css', function(){
 		.pipe(reload({stream: true}))
 });
 
+gulp.task('img', function() {
+	gulp.src('./src/img/*.**')
+		.pipe(gulp.dest('./dist/img'))
+		.pipe(reload({stream: true}))
+});
+
 gulp.task('serve', function(){
 	browserSync.init({
 		server: {
@@ -72,6 +80,7 @@ gulp.task('serve', function(){
 	gulp.watch('./src/index.html', ['html']);
 	gulp.watch('./src/js/*.js', ['js']);
 	gulp.watch('./src/css/*.css', ['css']);
+	gulp.watch('./src/img/*.**', ['img']);
 });
 
-gulp.task('default', ['bower-styles', 'bower-scripts', 'html', 'js', 'css', 'serve']);
+gulp.task('default', ['bower-styles', 'bower-scripts', 'html', 'js', 'css', 'img', 'serve']);

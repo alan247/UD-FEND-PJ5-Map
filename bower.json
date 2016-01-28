@@ -33,7 +33,13 @@
   },
   "overrides": {
     "foundation": {
-      "dependencies": null
+      "dependencies": null,
+      "main": [
+		    "scss/foundation.scss",
+		    "js/foundation.js",
+		    "js/foundation/foundation.joyride.js",
+		    "js/vendor/jquery.cookie.js"
+		]
     },
     "modernizr": {
     	"main": "modernizr.js"
