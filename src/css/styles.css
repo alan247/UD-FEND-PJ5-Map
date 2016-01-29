@@ -2,17 +2,19 @@
 	max-width: 100%;
 }
 
-.show-controls {
-	width: 23px;
-    height: 48px;
+.toggle-controls {
+	width: auto;
+	padding: 4px 8px;
     cursor: pointer;
-    background:rgba(255,255,255,0.9) url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAUCAQAAAAXDMSnAAAAi0lEQVR4AX3JQcqBURQG4O/+9WNG30D3vOfSDTuQsgcZyBakZANSzMVMBme3zsBI5/VMn4ZKLP5ki1E4tYejWpilxVUtzOEUD68odYmXR5BJNp/4zllXD2phllYvamHmirsayUkfJ5ruHzueTldC08kcT5YOY9xYujqQM03XKXuaLmEtNF1e1Nz89gbL+0do6OEwRwAAAABJRU5ErkJggg==) 7px center/7px 10px no-repeat;
+    color: #444;
+    font-weight: bold;
+    font-size: 12px;
+    background: rgba(255,255,255,0.9);
     box-shadow: 0px 1px 4px rgba(0,0,0,0.3);
     position: fixed;
-    top: 200px;
-    left: 0;
+    top: 127px;
+    left: 20px;
     z-index: 9;
-    transform:scaleX(-1);
 }
 
 #map {
@@ -21,11 +23,16 @@
 	float: left;
 }
 
+@media (min-width: 1024px) {
+	#map {
+		height: 100vh;
+	}
+}
+
 .filter {
 	padding: 35px 25px;
 	background-color: #4285F4;
 	z-index: 11;
-	width: 100vw;
 	position: relative;
 	height: auto;
 }
@@ -34,23 +41,25 @@ input {
 	margin: 0 !important;
 }
 
-@media (max-width: 641px) {
-	.list {
-		display: none;
-	}
-}
+
 
 .list {
-    width: 80vw;
+	display: none;
     position: fixed;
     top: 157px;
     height: calc(100vh - 207px);
-    left: 10vw;
+    left: 15vw;
     border-radius: 6px;
     border: 1px solid #BFBFB9;
     z-index: 11;
     background-color: white;
     margin: 0;
+    padding: 0
+}
+
+.list-container {
+	overflow: hidden;
+	height: 100%;
 }
 
 .list img {
@@ -60,15 +69,46 @@ input {
 	cursor: pointer;
 }
 
+@media (max-width: 1024px) {
+
+	/* Width specified with media query so that foundation's columns width can be used */
+	.list {
+		width: 70vw;
+	}
+	ul::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+@media (min-width: 1025px) {
+	.list {
+		display: block !important;
+		padding: 0;
+	    height: auto;
+	    border-radius: 0;
+	    border: 0;
+	    position: fixed;
+	    top: 107px;
+	    left: 0 !important;
+	    z-index: 11;
+	}
+
+	.list img {
+		display: none;
+	}
+
+	.overlay {
+		display: none !important;
+	}
+}
+
 ul {
-	height: 100%;
+	height: calc(100vh - 107px);
 	overflow: auto;
 	margin: 0;
 }
 
-ul::-webkit-scrollbar {
- display: none;
-}
+
 
 li {
 	list-style: none;

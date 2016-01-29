@@ -1,14 +1,15 @@
 
-   $(document).foundation('joyride', 'start');
 
-        function toggleList() {
-            $('.list, .overlay, .show-controls').toggle();
-        }
 
-        $('input').on('focus', function(){
-            toggleList();
-        });
+	$('input').on('focus', function(){
+		if ($(window).width() <= 1024){
+			$('.toggle-controls, .overlay, .list').css('display', 'block');
+		}
+	});
 
-        $('.overlay, li, .close-icon, .show-controls').on('click', function(){
-           toggleList();
-        });
+    $('.overlay, li, .close-icon, .toggle-controls').on('click', function(){
+      	if ($(window).width() <= 1024){
+			$('.toggle-controls, .overlay, .list').toggle();
+		}
+    });
+

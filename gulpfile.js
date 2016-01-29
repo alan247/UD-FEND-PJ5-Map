@@ -18,8 +18,6 @@ gulp.task('bower-scripts', function(){
 			'modernizr.js',
 			'jquery.js',
 			'foundation.js',
-			'foundation.joyride.js',
-			'jquery.cookie.js',
 			'knockout.js'
 		]))
 		.pipe(concat('vendors.js'))
