@@ -80,30 +80,10 @@ input {
 	}
 }
 
-@media (min-width: 1025px) {
-	.list {
-		display: block !important;
-		padding: 0;
-	    height: auto;
-	    border-radius: 0;
-	    border: 0;
-	    position: fixed;
-	    top: 107px;
-	    left: 0 !important;
-	    z-index: 11;
-	}
 
-	.list img {
-		display: none;
-	}
-
-	.overlay {
-		display: none !important;
-	}
-}
 
 ul {
-	height: calc(100vh - 107px);
+	height: 100%;
 	overflow: auto;
 	margin: 0;
 }
@@ -143,5 +123,28 @@ li:hover {
 	left: 0;
 	right: 0;
 }
+@media (min-width: 1025px) {
+	.list {
+		display: block !important;
+		padding: 0;
+	    height: auto;
+	    border-radius: 0;
+	    border: 0;
+	    position: fixed;
+	    top: 107px;
+	    left: 0 !important;
+	    z-index: 11;
+	}
 
+	.list img {
+		display: none;
+	}
+
+	.overlay {
+		display: none !important;
+	}
+	ul {
+		height: calc(100vh - 107px);
+	}
+}
 
