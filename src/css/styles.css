@@ -23,7 +23,7 @@
 	float: left;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1025px) {
 	#map {
 		height: 100vh;
 	}
@@ -69,7 +69,7 @@ input {
 	cursor: pointer;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1025px) {
 
 	/* Width specified with media query so that foundation's columns width can be used */
 	.list {
