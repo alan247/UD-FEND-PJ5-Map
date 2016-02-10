@@ -95,11 +95,11 @@ li {
 	padding: 10px 0 10px 20px;
 	border-bottom: 1px solid #ccc;
 	font-size: 12px;
+	cursor: pointer;
 }
 
-li:hover {
+li:hover:not(.selected){
 	background: #e7e7e7;
-	cursor: pointer;
 }
 
 .selected {

@@ -26,25 +26,8 @@
             <div class="list large-3 columns">
                 <img src="img/close.png" alt="close" class="close-icon">
                 <div class="list-container">
-                    <ul>
-                        <li>Mexico City, Mexico</li>
-                        <li>Lodz, Poland</li>
-                        <li>Munich, Germany</li>
-                        <li class="selected">Berlin, Germany</li>
-                        <li>San Diego, USA</li>
-                        <li>Mexico City, Mexico</li>
-                        <li>Lodz, Poland</li>
-                        <li>Munich, Germany</li>
-                        <li>San Diego, USA</li>
-                        <li>San Diego, USA</li>
-                        <li>Lodz, Poland</li>
-                        <li>Munich, Germany</li>
-                        <li>San Diego, USA</li>
-                        <li>San Diego, USA</li>
-                        <li>Mexico City, Mexico</li>
-                        <li>Lodz, Poland</li>
-                        <li>Munich, Germany</li>
-                        <li>San Diego, USA</li>
+                    <ul data-bind="foreach: markersArray">
+                        <li class="li-item" data-bind="text: name, click: $parent.goToMarker, listClick"></li>
                     </ul>
                 </div>
             </div>
