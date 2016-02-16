@@ -10,6 +10,10 @@
         <script src="https://maps.googleapis.com/maps/api/js"></script>
     </head>
     <body>
+
+            <div style="width:100px; height:25px; background-color:red; color:white; position: fixed; top:50px; left: 500px; z-index:5000; text-align:center" data-bind="text: filter"></div>
+
+
     <div class="overlay"></div>
         <div class="main row">
 
@@ -20,13 +24,14 @@
 
 
             <div class="filter small-12 large-3 columns">
-                <input type="text" placeholder="Filter locations...">
+                <input type="text" data-bind="textInput: filter" placeholder="Filter locations...">
             </div>
+
 
             <div class="list large-3 columns">
                 <img src="img/close.png" alt="close" class="close-icon">
                 <div class="list-container">
-                    <ul data-bind="foreach: markersArray">
+                    <ul data-bind="foreach: filteredItems">
                         <li class="li-item" data-bind="text: name, click: $parent.goToMarker, listClick"></li>
                     </ul>
                 </div>
