@@ -20,19 +20,41 @@ var viewModel = function() {
 	self.filter = ko.observable('');
 	var markersFinalArray = ko.observableArray([]);
 
+	// All the filtering happens here
 	self.filteredItems = ko.computed(function() {
+
+		// Set the filter words specified by the user to lower case
 	    var filter = self.filter().toLowerCase();
+
+	    // If the filter box is empty, return the full array and show all markers
 	    if (!filter) {
+	    	for (var i = 0; i < markersFinalArray().length; i++) {
+	        	markersFinalArray()[i].marker.setVisible(true);
+	        }
 	        return markersFinalArray();
+
+	    // If the user has entered something into the filter box, use knockout's utility function 'arrayFilter' to get filtered results
 	    } else {
-	        return ko.utils.arrayFilter(markersFinalArray(), function(mark) {
-				var string = mark.name.toLowerCase();
-				console.log(string);
-				if (string.search(filter) >= 0 ) {
-					return true;
-				} else {
-					return false;
+	    	return ko.utils.arrayFilter(markersFinalArray(), function(mark) {
+
+	    		// Loop through all the entries in the markers array
+				for (var key in markersFinalArray()) {
+
+					// Set the marker names to lowercase to compare with filter
+					var markerName = markersFinalArray()[key].name.toLowerCase();
+
+					// If the result of the 'search' method is equal or more than zero, set matching markers' visibility to true
+					if(markerName.search(filter) >= 0) {
+						markersFinalArray()[key].marker.setVisible(true);
+
+					// Else, hide them
+					} else {
+						markersFinalArray()[key].marker.setVisible(false);
+					}
 				}
+
+				// From the markers array, return only those items that match the filter. This is used to filter the list of items, not the markers.
+				return mark.name.toLowerCase().search(filter) >= 0;
 	        });
 	    }
 	});
@@ -54,30 +76,33 @@ var viewModel = function() {
 		map.panBy(0, -100);
 	}
 
-	var createMarker = function(name, lat, long, markerId) {
+	var createMarker = function(name, lat, long) {
 		var self = this;
 		self.name = name;
 		self.lat = lat;
 		self.long = long;
+		self.visible = true; //WITHOUT REAL FUNCTIONALITY YET
 
-	  	var marker = new google.maps.Marker({
-	    	position: new google.maps.LatLng(lat, long),
-	    	title: name,
-	      	animation: google.maps.Animation.DROP,
-	    	map: map
-	    });
+
 
 	  	markersFinalArray.push({
-	  		marker: marker,
+	  		marker: new google.maps.Marker({
+		    	position: new google.maps.LatLng(lat, long),
+		    	title: name,
+		      	animation: google.maps.Animation.DROP,
+		    	map: map
+		    }),
 	  		name: name,
 	  		lat: lat,
-	  		long: long
+	  		long: long,
+	  		visible: true //WITHOUT REAL FUNCTIONALITY YET
 	  	});
 
+	  	// console.log(markersFinalArray());
 
-	    marker.addListener('click', function() {
-	    	clickOnItem(name, marker, lat, long);
-	  	});
+	   //  marker.addListener('click', function() {
+	   //  	clickOnItem(name, marker, lat, long);
+	  	// });
 	};
 
 
@@ -100,6 +125,13 @@ var viewModel = function() {
 		new createMarker('Prague, Czech Republic', '50.075538', '14.437800')
 	]);
 
+	// for(key in markersFinalArray()){
+
+	//     markersFinalArray()[key].marker.addListener('click', function() {
+	//     	clickOnItem(name, marker, lat, long);
+	//   	});
+	// }
+
 
 
 	self.goToMarker = function(clickedItem) {
@@ -110,7 +142,6 @@ var viewModel = function() {
 				var markerLat = markersFinalArray()[key].lat;
 				var markerLong = markersFinalArray()[key].long;
 				clickOnItem(markerName, marker, markerLat, markerLong);
-				console.log(markersFinalArray());
 			}
 		}
 	};
