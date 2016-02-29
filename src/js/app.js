@@ -1,18 +1,3 @@
-	$('input').on('focus keydown', function(){
-		if ($(window).width() <= 1024){
-			$('.toggle-controls').css('display', 'none');
-			$('.overlay, .list').css('display', 'block');
-		}
-	});
-
-    $('.overlay, .close-icon, .toggle-controls').on('click', function(){
-      	if ($(window).width() <= 1024){
-			$('.toggle-controls, .overlay, .list').toggle();
-		}
-    });
-
-////////////////////////////////
-
 var viewModel = function() {
 	var self = this;
 	self.infoWindow = new google.maps.InfoWindow();
@@ -22,6 +7,10 @@ var viewModel = function() {
 
 	// All the filtering happens here
 	self.filteredItems = ko.computed(function() {
+
+		// // Close any currently open infowindow
+		 self.infoWindow.close();
+
 
 		// Set the filter words specified by the user to lower case
 	    var filter = self.filter().toLowerCase();
@@ -40,7 +29,7 @@ var viewModel = function() {
 	    		// Loop through all the entries in the markers array
 				for (var key in markersFinalArray()) {
 
-					// Set the marker names to lowercase to compare with filter
+					// Set the marker name to lowercase to compare with filter
 					var markerName = markersFinalArray()[key].name.toLowerCase();
 
 					// If the result of the 'search' method is equal or more than zero, set matching markers' visibility to true
@@ -59,32 +48,18 @@ var viewModel = function() {
 	    }
 	});
 
+
 	var map = new google.maps.Map(document.getElementById('map'), {
-		center: new google.maps.LatLng(49.8333467,14.1009912),
-	  	zoom: 3,
+		center: new google.maps.LatLng(40.8333467,-48.1009912),
+	  	zoom: 2,
 	  	mapTypeId: google.maps.MapTypeId.ROADMAP,
 	  	disableDefaultUI: true,
 	  	zoomControl: true
 	});
 
-	var clickOnItem = function(name, marker, lat, long) {
-		self.infoWindow.setContent(name);
-    	self.infoWindow.open(map, marker);
-    	var coords = new google.maps.LatLng(lat, long);
-		map.panTo(coords);
-		map.setZoom(6);
-		map.panBy(0, -100);
-	}
-
 	var createMarker = function(name, lat, long) {
-		var self = this;
-		self.name = name;
-		self.lat = lat;
-		self.long = long;
-		self.visible = true; //WITHOUT REAL FUNCTIONALITY YET
 
-
-
+		// Create marker with given data and add it to the final markers array
 	  	markersFinalArray.push({
 	  		marker: new google.maps.Marker({
 		    	position: new google.maps.LatLng(lat, long),
@@ -94,15 +69,22 @@ var viewModel = function() {
 		    }),
 	  		name: name,
 	  		lat: lat,
-	  		long: long,
-	  		visible: true //WITHOUT REAL FUNCTIONALITY YET
+	  		long: long
 	  	});
 
-	  	// console.log(markersFinalArray());
+	  	// Add click listener to the fresly created marker
+	  	var maLength = markersFinalArray().length;
+	  	var maLast = markersFinalArray()[maLength - 1];
+	  	var maItem = maLast.marker;
+	  	var maName = maLast.name;
+	  	var maLat = maLast.lat;
+	  	var maLong = maLast.long;
 
-	   //  marker.addListener('click', function() {
-	   //  	clickOnItem(name, marker, lat, long);
-	  	// });
+	  	maItem.addListener('click', function() {
+	    	self.clickOnItem(maName, maItem, maLat, maLong);
+	  	});
+
+
 	};
 
 
@@ -125,13 +107,14 @@ var viewModel = function() {
 		new createMarker('Prague, Czech Republic', '50.075538', '14.437800')
 	]);
 
-	// for(key in markersFinalArray()){
-
-	//     markersFinalArray()[key].marker.addListener('click', function() {
-	//     	clickOnItem(name, marker, lat, long);
-	//   	});
-	// }
-
+	self.clickOnItem = function(name, marker, lat, long) {
+		self.infoWindow.setContent(name);
+    	self.infoWindow.open(map, marker);
+    	var coords = new google.maps.LatLng(lat, long);
+		map.panTo(coords);
+		map.setZoom(5);
+		map.panBy(0, -210);
+	};
 
 
 	self.goToMarker = function(clickedItem) {
@@ -141,18 +124,32 @@ var viewModel = function() {
 				var marker = markersFinalArray()[key].marker;
 				var markerLat = markersFinalArray()[key].lat;
 				var markerLong = markersFinalArray()[key].long;
-				clickOnItem(markerName, marker, markerLat, markerLong);
+				self.clickOnItem(markerName, marker, markerLat, markerLong);
+				self.filter(markerName);
+				self.infoWindow.open(map, marker);
 			}
 		}
 	};
 
+	self.clearFilter = function() {
+		self.filter('');
+		var coords = new google.maps.LatLng(40.8333467,-48.1009912);
+		map.panTo(coords);
+		map.setZoom(2);
+	};
+
+	google.maps.event.addListener(self.infoWindow,'closeclick',function(){
+		self.clearFilter();
+	});
+
+	google.maps.event.addListener(map, "click", function(event) {
+		self.infoWindow.close();
+    	self.clearFilter();
+	});
+
+
 
 }
-
-
-
-
-/////////////////////////////////
 
 ko.bindingHandlers.listClick = {
     init : function(element) {
@@ -167,6 +164,24 @@ ko.bindingHandlers.listClick = {
 
 ko.applyBindings(new viewModel());
 
+
+
+
+
+
+
+$('input').on('focus keydown', function(){
+	if ($(window).width() <= 1024){
+		$('.toggle-controls').css('display', 'none');
+		$('.overlay, .list').css('display', 'block');
+	}
+});
+
+$('.overlay, .close-icon, .toggle-controls').on('click', function(){
+  	if ($(window).width() <= 1024){
+		$('.toggle-controls, .overlay, .list').toggle();
+	}
+});
 
 
 

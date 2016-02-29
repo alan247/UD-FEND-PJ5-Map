@@ -41,6 +41,25 @@ input {
 	margin: 0 !important;
 }
 
+.filter-input {
+	position: relative;
+}
+
+.clear-filter {
+	display: block;
+	background: url(data:image/gif;base64,R0lGODlhBwAHAIAAAP///5KSkiH5BAAAAAAALAAAAAAHAAcAAAIMTICmsGrIXnLxuDMLADs=
+);
+	background-repeat: no-repeat;
+	background-size: cover;
+	height: 10px;
+	width: 10px;
+	position: absolute;
+	top: 14px;
+	right: 13px;
+	cursor: pointer;
+}
+
+
 
 
 .list {
