@@ -4,6 +4,7 @@ var viewModel = function() {
 	self.wikiArticles = ko.observableArray();
 	self.filter = ko.observable('');
 	var markersFinalArray = ko.observableArray([]);
+	var infoWindowHTML = $('#info-window');
 
 
 	// All the filtering happens here
@@ -109,6 +110,8 @@ var viewModel = function() {
 
 
 	self.clickOnItem = function(name, marker, lat, long) {
+
+		$("body").append(infoWindowHTML);
 		self.infoWindow.close();
 
 		marker.setAnimation(google.maps.Animation.BOUNCE);
@@ -155,7 +158,10 @@ var viewModel = function() {
 	// Clear filter input when an infowindow is closed
 	google.maps.event.addListener(self.infoWindow,'closeclick',function(){
 		self.clearFilter();
+		$("body").append(infoWindowHTML);
 	});
+
+
 
 	// Closes infowindows when the map is clicked
 	google.maps.event.addListener(map, "click", function(event) {
@@ -166,6 +172,8 @@ var viewModel = function() {
 			self.infoWindow.close();
 	    	self.clearFilter();
     	}
+
+		$("body").append(infoWindowHTML);
 	});
 
 	/////////////////////////////////
@@ -207,12 +215,14 @@ var viewModel = function() {
 			});
 
 
-			var infoWindowHTML = $('#info-window').html();
+
 
 			console.log(self.wikiArticles());
 			console.log(infoWindowHTML);
 
-			self.infoWindow.setContent(infoWindowHTML);
+			self.infoWindow.setContent(infoWindowHTML[0]);
+
+
 
 
 
