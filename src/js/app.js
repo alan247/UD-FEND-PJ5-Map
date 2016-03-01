@@ -1,9 +1,10 @@
 var viewModel = function() {
 	var self = this;
 	self.infoWindow = new google.maps.InfoWindow();
-
+	self.wikiArticles = ko.observableArray();
 	self.filter = ko.observable('');
 	var markersFinalArray = ko.observableArray([]);
+
 
 	// All the filtering happens here
 	self.filteredItems = ko.computed(function() {
@@ -48,7 +49,7 @@ var viewModel = function() {
 	    }
 	});
 
-
+	// Google maps init
 	var map = new google.maps.Map(document.getElementById('map'), {
 		center: new google.maps.LatLng(40.8333467,-48.1009912),
 	  	zoom: 2,
@@ -57,6 +58,7 @@ var viewModel = function() {
 	  	zoomControl: true
 	});
 
+	// Markers processing function
 	var createMarker = function(name, lat, long) {
 
 		// Create marker with given data and add it to the final markers array
@@ -83,19 +85,17 @@ var viewModel = function() {
 	  	maItem.addListener('click', function() {
 	    	self.clickOnItem(maName, maItem, maLat, maLong);
 	  	});
-
-
 	};
 
-
+	// Hardcoded locations data
 	self.locationsData = ko.observableArray([
 		new createMarker('Mexico City, Mexico', '19.3911658', '-99.4245083'),
 		new createMarker('Berlin, Germany', '52.5076274', '13.1442608'),
-		new createMarker('Munich, Germany', '48.1550543', '11.4014064'),
-		new createMarker('Lodz, Poland', '51.7732467', '19.3401639'),
-		new createMarker('San Diego, US', '32.7197381', '-117.3376007'),
+		// new createMarker('Munich, Germany', '48.1550543', '11.4014064'),
+		// new createMarker('Lodz, Poland', '51.7732467', '19.3401639'),
+		// new createMarker('San Diego, US', '32.7197381', '-117.3376007'),
 		new createMarker('Lisbon, Portugal', '38.7437395', '-9.2304162'),
-		new createMarker('Mazunte, Mexico', '15.6678736', '-96.570997'),
+		// new createMarker('Mazunte, Mexico', '15.6678736', '-96.570997'),
 		new createMarker('Paris, France', '48.856614', '2.352222'),
 		new createMarker('Rome, Italy', '41.902783', '12.496366'),
 		new createMarker('Warsaw, Poland', '52.229676', '21.012229'),
@@ -107,16 +107,27 @@ var viewModel = function() {
 		new createMarker('Prague, Czech Republic', '50.075538', '14.437800')
 	]);
 
+
 	self.clickOnItem = function(name, marker, lat, long) {
-		self.infoWindow.setContent(name);
-    	self.infoWindow.open(map, marker);
+		self.infoWindow.close();
+
+		marker.setAnimation(google.maps.Animation.BOUNCE);
+    	setTimeout(function(){
+    		marker.setAnimation(null);
+    		self.infoWindow.open(map, marker);
+    	}, 750);
     	var coords = new google.maps.LatLng(lat, long);
+
 		map.panTo(coords);
 		map.setZoom(5);
 		map.panBy(0, -210);
+
+		var apiCoords = lat+'|'+long;
+
+		self.getWikiData(apiCoords, marker);
 	};
 
-
+	// Function accesed from the VIEW. Uses the name from the clicked item on the list and calls clickOnItem() with its data.
 	self.goToMarker = function(clickedItem) {
 		var markerName = clickedItem.name;
 		for(var key in markersFinalArray()) {
@@ -126,11 +137,14 @@ var viewModel = function() {
 				var markerLong = markersFinalArray()[key].long;
 				self.clickOnItem(markerName, marker, markerLat, markerLong);
 				self.filter(markerName);
-				self.infoWindow.open(map, marker);
+				setTimeout(function(){
+		    		self.infoWindow.open(map, marker);
+		    	}, 750);
 			}
 		}
 	};
 
+	// Clears the filter input and re-centers the map on click "X"
 	self.clearFilter = function() {
 		self.filter('');
 		var coords = new google.maps.LatLng(40.8333467,-48.1009912);
@@ -138,15 +152,77 @@ var viewModel = function() {
 		map.setZoom(2);
 	};
 
+	// Clear filter input when an infowindow is closed
 	google.maps.event.addListener(self.infoWindow,'closeclick',function(){
 		self.clearFilter();
 	});
 
+	// Closes infowindows when the map is clicked
 	google.maps.event.addListener(map, "click", function(event) {
-		self.infoWindow.close();
-    	self.clearFilter();
+		var map = self.infoWindow.getMap();
+
+		// Only act if an infowindow is open
+		if (map !== null && typeof map !== 'undefined' ) {
+			self.infoWindow.close();
+	    	self.clearFilter();
+    	}
 	});
 
+	/////////////////////////////////
+
+	self.getWikiData = function(coords, marker) {
+
+		// Empty wikiArticles array
+		self.wikiArticles().length = 0;
+
+		// Define wiki api url
+		var wikiURL = 'https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages%7Cinfo&list=&generator=geosearch&piprop=thumbnail&pithumbsize=80&pilimit=4&inprop=url&ggscoord=' + coords +'&ggsradius=10000&ggslimit=4&callback=?';
+
+		$.getJSON(wikiURL, function(data){
+
+			var wikiItems = data.query.pages;
+
+			$.each(wikiItems, function(k, v) {
+				var wikiTitle = v.title;
+				var wikiURL = v.fullurl;
+
+				if ('thumbnail' in v) {
+					var wikiThumb = v.thumbnail.source;
+					var wikiThumbW = v.thumbnail.width;
+					var wikiThumbH = v.thumbnail.height;
+				} else {
+					var wikiThumb = 'http://thumbnail.image.rakuten.co.jp/@0_mall/com/css/c/pc/img/nopicture/nopicture.gif?_ex=128x128';
+				}
+
+				var wikiObject = {
+					title : wikiTitle,
+					thumbnail : wikiThumb,
+					thumbnailWidth : wikiThumbW,
+					thumbnailHeight : wikiThumbH,
+					url : wikiURL
+				}
+
+				self.wikiArticles.push(wikiObject);
+
+			});
+
+
+			var infoWindowHTML = $('#info-window').html();
+
+			console.log(self.wikiArticles());
+			console.log(infoWindowHTML);
+
+			self.infoWindow.setContent(infoWindowHTML);
+
+
+
+
+		}).fail(function(){
+			console.log('fail ajax');
+		});
+
+
+	}
 
 
 }
@@ -166,7 +242,11 @@ ko.applyBindings(new viewModel());
 
 
 
-
+// if ($('input').val() !== '') {
+// 	$('.clear-filter').css('display', 'block');
+// } else {
+// 	$('.clear-filter').css('display', 'none');
+// }
 
 
 

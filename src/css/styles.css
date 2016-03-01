@@ -59,7 +59,10 @@ input {
 	cursor: pointer;
 }
 
-
+#info-window {
+	min-width: 30vw;
+	max-height: 65vh;
+}
 
 
 .list {

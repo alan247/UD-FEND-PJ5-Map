@@ -11,13 +11,13 @@
     </head>
     <body>
 
-    <div class="overlay"></div>
+        <div class="overlay"></div>
         <div class="main row">
 
 
-                <div class="toggle-controls">
-                    Show list
-                </div>
+            <div class="toggle-controls">
+                Show list
+            </div>
 
 
             <div class="filter small-12 large-3 columns">
@@ -36,10 +36,24 @@
                     </ul>
                 </div>
             </div>
+
+
             <div id="map" class="small-12 large-9 columns"></div>
 
 
         </div>
+
+        <div id="info-window" data-bind="foreach: wikiArticles">
+            <a data-bind="attr: { href: url }">
+                <li>
+                    <img data-bind="attr: {src : thumbnail}" >
+                    <div data-bind="text:name"></div>
+
+                </li>
+            </a>
+        </div>
+
+
 
 
         <script src="js/vendors.js"></script>
