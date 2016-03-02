@@ -2,6 +2,7 @@ var viewModel = function() {
 	var self = this;
 	self.infoWindow = new google.maps.InfoWindow();
 	self.wikiArticles = ko.observableArray();
+	self.flickrPics = ko.observableArray();
 	self.filter = ko.observable('');
 	var markersFinalArray = ko.observableArray([]);
 	var infoWindowHTML = $('#info-window');
@@ -128,6 +129,7 @@ var viewModel = function() {
 		var apiCoords = lat+'|'+long;
 
 		self.getWikiData(apiCoords, marker);
+		self.getFlickrData(lat, long, name);
 	};
 
 	// Function accesed from the VIEW. Uses the name from the clicked item on the list and calls clickOnItem() with its data.
@@ -214,25 +216,77 @@ var viewModel = function() {
 
 			});
 
-
-
-
-			console.log(self.wikiArticles());
-			console.log(infoWindowHTML);
-
 			self.infoWindow.setContent(infoWindowHTML[0]);
-
-
-
-
-
 
 		}).fail(function(){
 			console.log('fail ajax');
 		});
 
 
-	}
+	};
+
+	////////////////////////
+
+	self.getFlickrData = function(lat, long, name) {
+
+        $('#loadingmessage').show();
+
+		// Empty flickrPics array
+		self.flickrPics().length = 0;
+
+        // URL enconde the city name (without country) for the API request
+        var urlEncodedName = encodeURIComponent(name.split(',')[0].trim());
+
+        // API key assigned by flickr
+        var flickrAPIkey = '3a36e9a73746f67a89753089747aede3';
+
+		// Construct URL to call flickr's API
+		var flickrURL = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key='+flickrAPIkey+'&format=json&nojsoncallback=1&per_page=10&tags=' + urlEncodedName + ',tourist&tag_mode=all';
+
+
+
+			console.log(flickrURL);
+
+			$.getJSON(flickrURL, function(data){
+
+			var flickrItems = data.photos.photo;
+
+			//var flickrHTML = '<ul>\n';
+
+		   $.each(flickrItems, function(k, v) {
+
+                var photoFarm = v.farm;
+                var photoServer = v.server;
+                var photoID = v.id;
+                var photoSecret = v.secret;
+                var photoOwner = v.owner;
+                var photoTitle = v.title;
+
+                var thumbURL = 'http://farm' + photoFarm + '.static.flickr.com/' + photoServer + '/' + photoID + '_' + photoSecret + '_' + 't.jpg';
+
+                var photoURL = 'http://www.flickr.com/photos/' + photoOwner + '/' + photoID;
+
+                var flickrObject = {
+                    thumbURL : thumbURL,
+                    photoURL : photoURL,
+                    photoTitle : photoTitle
+                }
+
+                self.flickrPics.push(flickrObject);
+
+			 });
+
+            console.log(self.flickrPics());
+
+		}).fail(function(){
+			console.log('fail ajax');
+		}).always(function(){
+
+            $('#loadingmessage').hide();
+        });
+
+	};
+
 
 
 }

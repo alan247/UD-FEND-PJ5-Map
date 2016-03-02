@@ -54,6 +54,21 @@
         </div>
 
 
+        <div id="debug" data-bind="foreach: flickrPics" style="width:400px; height:250px; border:1px solid black; background: white; position: fixed; bottom: 0; right: 0; overflow: auto; z-index: 999999">
+            <a data-bind="attr: { href: photoURL }">
+                <li>
+                    <img data-bind="attr: {src: thumbURL, alt: photoTitle}">
+                </li>
+            </a>
+
+
+        </div>
+
+
+        <div id='loadingmessage' style='display:none; z-index: 9999; width: 80px; height: 80px; background:white;border:1px solid black; position:fixed; bottom:0; left:0;'>
+            <img src='img/loading.gif'/>
+        </div>
+
 
 
         <script src="js/vendors.js"></script>
