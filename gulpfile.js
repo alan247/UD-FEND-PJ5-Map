@@ -63,6 +63,12 @@ gulp.task('css', function(){
 		.pipe(reload({stream: true}))
 });
 
+gulp.task('fonts', function(){
+	gulp.src('./src/fonts/*.**')
+		.pipe(gulp.dest('./dist/fonts'))
+		.pipe(reload({stream: true}))
+});
+
 gulp.task('img', function() {
 	gulp.src('./src/img/*.**')
 		.pipe(gulp.dest('./dist/img'))
@@ -81,4 +87,4 @@ gulp.task('serve', function(){
 	gulp.watch('./src/img/*.**', ['img']);
 });
 
-gulp.task('default', ['bower-styles', 'bower-scripts', 'html', 'js', 'css', 'img', 'serve']);
+gulp.task('default', ['bower-styles', 'bower-scripts', 'html', 'js', 'css', 'fonts', 'img', 'serve']);

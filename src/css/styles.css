@@ -59,11 +59,6 @@ input {
 	cursor: pointer;
 }
 
-#info-window {
-	min-width: 30vw;
-	max-height: 65vh;
-}
-
 
 .list {
 	display: none;
@@ -169,4 +164,132 @@ li:hover:not(.selected){
 		height: calc(100vh - 107px);
 	}
 }
+
+
+#info-window {
+	min-width: 30vw;
+	height: 45vh;
+	position: relative;
+	padding: 3%;
+}
+
+
+#location-info {
+	width: 95%;
+	height: 95%;
+	/*border: 2px solid red;*/
+	position: absolute;
+}
+
+#info-window {
+	font-size: 28px;
+	font-weight: bold;
+	color: #555;
+}
+
+.api-buttons {
+	width:100%;
+	/*border:1px solid black;*/
+	position: absolute;
+	bottom: 10%;
+	text-align: center;
+}
+
+.api-buttons img {
+	margin: 0 auto;
+
+}
+
+.api-buttons img:first-child {
+	margin-right: 15px;
+}
+
+#wiki-window, #flickr-window {
+	display: none;
+	font-size: 22px;
+}
+
+#wikipedia-button, #flickr-button{
+	cursor: pointer;
+	display: none;
+}
+
+/*.info-window-bar {
+	width:100%;
+	background: #e2e2e2;
+	text-align: center;
+	font-weight: bold;
+	font-size: 13px;
+	padding: 6px 6px 6px 20px;
+	position: relative;
+	height: auto;
+}
+
+.info-window-bar span {
+	position: absolute;
+	display: block;
+	left:0;
+	top:0;
+	height: 40px;
+	width: 35px;
+	cursor: pointer;
+	background: #a8a8a8;
+
+}*/
+
+#info-window ul {
+	height: 100%;
+	overflow: auto;
+	margin: 0;
+}
+
+
+
+#info-window li {
+	list-style: none;
+	padding: 10px 0 10px 20px;
+	border-bottom: 1px solid #ccc;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+
+#info-window li:hover:not(.selected){
+	background: #e7e7e7;
+}
+
+.go-back {
+	cursor: pointer;
+}
+
+#flickr-loading {
+	z-index: 9999;
+	width:100%;
+	display: none;
+	position: absolute;
+	height: 100%;
+	text-align: center;
+	padding-top: 10%;
+	background:white;
+	font-size: 24px;
+	line-height: .9;
+}
+
+#flickr-loading img {
+	display: block;
+	margin: 0 auto 10px;
+
+}
+
+#flickr-loading span {
+	font-size: 11px;
+}
+
+
+
+#flickr-gallery {
+	display: none;
+}
+
+
 

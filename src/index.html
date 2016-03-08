@@ -6,7 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title></title>
         <link rel="stylesheet" href="css/vendors.css">
+        <link type="text/css" rel="stylesheet" href="css/lightgallery.css" />
         <link rel="stylesheet" href="css/styles.css">
+
         <script src="https://maps.googleapis.com/maps/api/js"></script>
     </head>
     <body>
@@ -43,35 +45,58 @@
 
         </div>
 
-        <div id="info-window" data-bind="foreach: wikiArticles">
-            <a data-bind="attr: { href: url }">
-                <li>
-                    <img data-bind="attr: {src : thumbnail}" >
-                    <div data-bind="text: title"></div>
-
-                </li>
-            </a>
-        </div>
-
-
-        <div id="debug" data-bind="foreach: flickrPics" style="width:400px; height:250px; border:1px solid black; background: white; position: fixed; bottom: 0; right: 0; overflow: auto; z-index: 999999">
-            <a data-bind="attr: { href: photoURL }">
-                <li>
-                    <img data-bind="attr: {src: thumbURL, alt: photoTitle}">
-                </li>
-            </a>
+        <div id="info-windowss">
 
 
         </div>
 
+        <div id="info-window">
+            <div id="location-info">
+                <span data-bind="text: currentLocationData"></span>
+                <div class="api-buttons">
+                    <img id="wikipedia-button" src="img/wikipedia.png">
 
-        <div id='loadingmessage' style='display:none; z-index: 9999; width: 80px; height: 80px; background:white;border:1px solid black; position:fixed; bottom:0; left:0;'>
-            <img src='img/loading.gif'/>
+                    <div id="flickr-load" style="width:108px; height: 108px; display: inline-block; border: 1px solid black;">
+                        <img src="img/loading-flickr.gif">
+                    </div>
+                    <img id="flickr-button" src="img/flickr.png">
+                </div>
+
+            </div>
+
+            <div id="wiki-window">
+
+                <img class="go-back" src="img/back.png">
+                Nearby places in Wikipedia
+                <ul>
+                    <div data-bind="foreach: wikiArticles">
+                        <a data-bind="attr: { href: url }">
+                            <li>
+                                <img data-bind="attr: {src : thumbnail}" >
+                                <div data-bind="text: title"></div>
+
+                            </li>
+                        </a>
+                    </div>
+                </ul>
+            </div>
+
         </div>
+
+
+
+ <div id="flickr-gallery" data-bind="foreach: flickrPics" >
+                    <a data-bind="attr: { href: src }">
+                        <img data-bind="attr: {src: src, alt: subHtml}">
+                    </a>
+                </div>
+
+
 
 
 
         <script src="js/vendors.js"></script>
+
        	<script src="js/app.js"></script>
 
 
