@@ -1539,6 +1539,7 @@ var viewModel = function() {
         // Flickr sometimes takes a while to load. Let's show a loading gif!
         $('#wikipedia-button').show();
         $('#flickr-load').show();
+        $('#flickr-button').hide();
 
         // Empty flickrPics array
         self.flickrPics().length = 0;
@@ -1587,8 +1588,8 @@ var viewModel = function() {
             console.log('fail ajax');
         }).always(function() {
             // When the call is completed, hide the loading gif!
-            $('#flickr-load').hide();
-            $('#flickr-button').show();
+            $('#flickr-load').fadeOut(500);
+            $('#flickr-button').delay(500).fadeIn(500);
 
             $('#flickr-button').on('click', function(){
                 console.log('hey');
@@ -1597,10 +1598,12 @@ var viewModel = function() {
                     dynamicEl: self.flickrPics()
                 });
             });
-            $('#flickr-gallery').on('onCloseAfter.lg',function(event){
+            $('#flickr-gallery').on('onBeforeClose.lg',function(event){
+
+                console.log('beforeclose');
 
                 $('#location-info').show().siblings().hide();
-                $('#flickr-gallery').destroy(true);
+                $(this).data('lightGallery').destroy(true);
 
             });
         });

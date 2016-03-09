@@ -54,10 +54,17 @@
             <div id="location-info">
                 <span data-bind="text: currentLocationData"></span>
                 <div class="api-buttons">
-                    <img id="wikipedia-button" src="img/wikipedia.png">
+                    <img id="wikipedia-button" src="img/wikipedia.png" style="float:left">
 
-                    <div id="flickr-load" style="width:108px; height: 108px; display: inline-block; border: 1px solid black;">
-                        <img src="img/loading-flickr.gif">
+                    <div id="flickr-load" style="width:108px; height: 108px;display: flex;justify-content: center;align-items: center; float: left">
+                        <div>
+                        <img src="img/loading-flickr.gif" style="margin-right: 0">
+                            <span style="
+                            font-size: 10px;
+                            display: block;
+                            font-weight: normal;
+                            ">calling flickr...</span>
+                        </div>
                     </div>
                     <img id="flickr-button" src="img/flickr.png">
                 </div>
@@ -85,11 +92,11 @@
 
 
 
- <div id="flickr-gallery" data-bind="foreach: flickrPics" >
-                    <a data-bind="attr: { href: src }">
-                        <img data-bind="attr: {src: src, alt: subHtml}">
-                    </a>
-                </div>
+        <div id="flickr-gallery" data-bind="foreach: flickrPics" >
+            <a data-bind="attr: { href: src }">
+                <img data-bind="attr: {src: src, alt: subHtml}">
+            </a>
+        </div>
 
 
 

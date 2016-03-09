@@ -211,6 +211,7 @@ li:hover:not(.selected){
 
 #wikipedia-button, #flickr-button{
 	cursor: pointer;
+	float: left;
 	display: none;
 }
 
