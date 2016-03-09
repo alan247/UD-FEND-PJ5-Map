@@ -1298,7 +1298,7 @@
 
 })(jQuery, window, document);
 
-
+//////////////////////////////////////
 
 var viewModel = function() {
     var self = this;
@@ -1360,7 +1360,10 @@ var viewModel = function() {
         zoom: 2,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         disableDefaultUI: true,
-        zoomControl: true
+        zoomControl: true,
+        zoomControlOptions: {
+            position: google.maps.ControlPosition.RIGHT_TOP
+        }
     });
 
     // Markers processing function
@@ -1392,25 +1395,30 @@ var viewModel = function() {
         });
     };
 
-    // Hardcoded locations data
-    self.locationsData = ko.observableArray([
-        new createMarker('Mexico City, Mexico', '19.3911658', '-99.4245083'),
-        new createMarker('Berlin, Germany', '52.5076274', '13.1442608'),
-        new createMarker('Munich, Germany', '48.1550543', '11.4014064'),
-        new createMarker('Lodz, Poland', '51.7732467', '19.3401639'),
-        new createMarker('San Diego, US', '32.7197381', '-117.3376007'),
-        new createMarker('Lisbon, Portugal', '38.7437395', '-9.2304162'),
-        new createMarker('Mazunte, Mexico', '15.6678736', '-96.570997'),
-        new createMarker('Paris, France', '48.856614', '2.352222'),
-        new createMarker('Rome, Italy', '41.902783', '12.496366'),
-        new createMarker('Warsaw, Poland', '52.229676', '21.012229'),
-        new createMarker('Wien, Austria', '48.208174', '16.373819'),
-        new createMarker('Madrid, Spain', '40.416775', '-3.703790'),
-        new createMarker('Reykjavik, Iceland', '64.126521', '-21.817439'),
-        new createMarker('Guatemala City, Guatemala', '14.634915', '-90.506882'),
-        new createMarker('Amsterdam, Netherlands', '52.370216', '4.895168'),
-        new createMarker('Prague, Czech Republic', '50.075538', '14.437800')
-    ]);
+    // Get Initial locations from the server I set up for this purpose
+    (function(){
+
+        var initialLocationsURL = 'http://paperbac.pairserver.com/locations.php';
+
+        $.getJSON(initialLocationsURL, function(data) {
+
+            var locations = data.locations;
+            console.log(locations);
+
+            $.each(locations, function(k, v) {
+                var cityCountry = v.city + ', ' + v.country;
+                var latitude = v.latitude;
+                var longitude = v.longitude;
+
+                new createMarker(cityCountry, latitude, longitude);
+            });
+
+            self.infoWindow.setContent(infoWindowHTML[0]);
+
+        }).fail(function() {
+            console.log('fail ajax');
+        });
+    })();
 
 
     self.clickOnItem = function(name, marker, lat, long) {
@@ -1469,8 +1477,6 @@ var viewModel = function() {
         self.clearFilter();
         $("body").append(infoWindowHTML);
     });
-
-
 
     // Closes infowindows when the map is clicked
     google.maps.event.addListener(map, "click", function(event) {

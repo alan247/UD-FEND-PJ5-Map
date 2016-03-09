@@ -168,7 +168,8 @@ li:hover:not(.selected){
 
 #info-window {
 	min-width: 30vw;
-	height: 45vh;
+	max-height: 45vh;
+	min-height: 220px;
 	position: relative;
 	padding: 3%;
 }
