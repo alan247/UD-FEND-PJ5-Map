@@ -9,7 +9,7 @@
         <link type="text/css" rel="stylesheet" href="css/lightgallery.css" />
         <link rel="stylesheet" href="css/styles.css">
 
-        <script src="https://maps.googleapis.com/maps/api/js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
     </head>
     <body>
 
@@ -24,8 +24,8 @@
 
             <div class="filter small-12 large-3 columns">
                 <div class="filter-input">
-                    <input type="search" data-bind="textInput: filter" placeholder="Filter locations...">
-                    <span class="clear-filter" data-bind="click: clearFilter"></span>
+                    <input id="#locations-filter" type="search" data-bind="textInput: filter" placeholder="Filter locations...">
+                    <span class="clear-filter" data-bind="click: clearMap"></span>
                 </div>
             </div>
 
@@ -94,7 +94,7 @@
             </a>
         </div>
 
-<div style="
+<div id="add-button" style="
     position: fixed;
     bottom: 24px;
     right: 24px;
@@ -111,6 +111,16 @@
     font-family: verdana;
     font-size: 23px;
 ">+</div>
+<div id="add-overlay" style="">
+
+     <input id="pac-input" type="text" style="width:40%; height: 50px; position: absolute;top: calc(50vh - 25px);margin: 0 auto !important;display: block;left: 30vw; z-index: 99999" placeholder="Type location to add..." />
+
+    <span id="overlay-close-button" style="display:block; position:absolute; top: 25px; right: 25px; width: 30px; height: 30px; font-size:26px; font-weight: bold; z-index: 99999; color: #ccc; cursor: pointer;">X</span>
+
+</div>
+
+
+
 
 
 

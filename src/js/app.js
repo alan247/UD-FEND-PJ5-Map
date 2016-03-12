@@ -1306,12 +1306,13 @@ var viewModel = function() {
     self.wikiArticles = ko.observableArray();
     self.flickrPics = ko.observableArray();
     self.filter = ko.observable('');
-    self.currentLocationData = ko.observable('');
+    self.currentLocationData = ko.observable('Loading...');
     var markersFinalArray = ko.observableArray([]);
     var infoWindowHTML = $('#info-window');
 
 
-    // All the filtering happens here
+
+    // The filtering happens here
     self.filteredItems = ko.computed(function() {
 
         // // Close any currently open infowindow
@@ -1366,6 +1367,106 @@ var viewModel = function() {
         }
     });
 
+    // Init GMaps geocoder
+    var geocoder = new google.maps.Geocoder();
+
+    // Init GMaps autocomplete
+    var autocomplete = new google.maps.places.Autocomplete(document.getElementById('pac-input'), {
+        bounds: new google.maps.LatLngBounds(
+            new google.maps.LatLng(-90, -180),
+            new google.maps.LatLng(90, 180)),
+        types: ['(cities)']
+    });
+
+    // Creates a marker with the geocoded user info
+    function geocodeInput() {
+
+        // Get autocomplete result by checking the value of the input
+        var address = $('#pac-input').val();
+
+        // Pass the value to Google Maps' geocode method
+        geocoder.geocode( { 'address': address}, function(results, status) {
+
+            // If geocode request is succesful
+            if (status == google.maps.GeocoderStatus.OK) {
+
+                // Re-center map to the new location
+                map.setCenter(results[0].geometry.location);
+
+                // Extract name and coordinates from geocode results
+                cityName = results[0].formatted_address;
+
+                // Geocode returns a LatLng object, so in order to get the lat and long, we need to use lat() and lng() methods
+                cityLat = results[0].geometry.location.lat();
+                cityLong = results[0].geometry.location.lng();
+
+                // Call our marker creator with the new marker's info
+                new createMarker(cityName, cityLat, cityLong);
+
+                // Store the locations marker in localstorage
+                self.storeLocally();
+
+
+            } else {
+            alert("Geocode was not successful for the following reason: " + status);
+          }
+        });
+    }
+
+    // Local storage management
+    self.storeLocally = function(){
+
+        // Create a new array with markersFinalArray() data. For each item we need: lat, lng and name. We leave out the marker. This is necessary because JSON.stringify cannot do its job in an array that contains objects containing GMaps markers
+
+        var markers = markersFinalArray();
+
+        var storeArray = [];
+
+        $.each(markers, function(k, v) {
+            var lat = v.lat;
+            var long = v.long;
+            var name = v.name;
+
+            markerObject = {
+                name: v.name,
+                lat: v.lat,
+                long: v.long
+            }
+
+            storeArray.push(markerObject);
+            console.log(lat, long, name);
+        });
+
+        console.log(JSON.stringify(storeArray));
+
+        localStorage.setItem('userLocalData', JSON.stringify(storeArray));
+
+
+
+       // var oldItems = JSON.parse(localStorage.getItem('itemsArray')) || [];
+
+        // var newItem = {
+        //     'product-name': name,
+        //     'product-image': image,
+        //     'product-price': price
+        // };
+
+        //oldItems.push(newItem);
+
+
+        //localStorage.setItem('userLocalData', JSON.stringify(markersFinalArray()));
+
+    };
+
+
+    // Listens for 'enter' key. Hides the overlay and calls geocodeInput
+    $('#pac-input').keyup(function (e) {
+        if (e.keyCode == 13) {
+             $('#add-overlay').hide();
+            geocodeInput();
+        }
+    });
+
     // Markers processing function
     var createMarker = function(name, lat, long) {
 
@@ -1395,8 +1496,25 @@ var viewModel = function() {
         });
     };
 
-    // Get Initial locations from the server I set up for this purpose
-    (function(){
+
+    // Check if there's any local storage with data from previous sessions
+    if (localStorage.getItem('userLocalData') !== null) {
+
+       var storedData = JSON.parse(localStorage.getItem('userLocalData'));
+
+       $.each(storedData, function(k, v) {
+            var lat = v.lat;
+            var long = v.long;
+            var name = v.name;
+
+           new createMarker(name, lat, long);
+        });
+
+       console.log('localstorage loaded');
+
+    } else {
+
+        // Get Initial locations from the server I set up for this purpose
 
         var initialLocationsURL = 'http://paperbac.pairserver.com/locations.php';
 
@@ -1418,13 +1536,16 @@ var viewModel = function() {
         }).fail(function() {
             console.log('fail ajax');
         });
-    })();
+        console.log('remote marker data loaded');
+    }
 
 
+    // Process click on a marker or list item
     self.clickOnItem = function(name, marker, lat, long) {
 
         $("body").append(infoWindowHTML);
         self.infoWindow.close();
+        $('#info-window').show();
         $('#location-info').show().siblings().hide();
 
         marker.setAnimation(google.maps.Animation.BOUNCE);
@@ -1456,7 +1577,7 @@ var viewModel = function() {
                 var markerLat = markersFinalArray()[key].lat;
                 var markerLong = markersFinalArray()[key].long;
                 self.clickOnItem(markerName, marker, markerLat, markerLong);
-                self.filter(markerName);
+                //self.filter(markerName); // Sets filter to cu
                 setTimeout(function() {
                     self.infoWindow.open(map, marker);
                 }, 750);
@@ -1464,18 +1585,19 @@ var viewModel = function() {
         }
     };
 
-    // Clears the filter input and re-centers the map on click "X"
-    self.clearFilter = function() {
+    // Clears the filter input and re-centers the map
+    self.clearMap = function() {
         self.filter('');
         var coords = new google.maps.LatLng(40.8333467, -48.1009912);
         map.panTo(coords);
         map.setZoom(2);
+        self.infoWindow.close();
+        $('#info-window').hide();
+        $('body').append(infoWindowHTML);
     };
 
-    // Clear filter input when an infowindow is closed
     google.maps.event.addListener(self.infoWindow, 'closeclick', function() {
-        self.clearFilter();
-        $("body").append(infoWindowHTML);
+        self.clearMap();
     });
 
     // Closes infowindows when the map is clicked
@@ -1484,12 +1606,21 @@ var viewModel = function() {
 
         // Only act if an infowindow is open
         if (map !== null && typeof map !== 'undefined') {
-            self.infoWindow.close();
-            self.clearFilter();
+            self.clearMap();
         }
-
-        $("body").append(infoWindowHTML);
     });
+
+    // Manage listener on 'esc' key. Closes overlay or clears map depending on context
+    $(document).keyup(function (e) {
+        if (e.keyCode == 27) {
+            if($('#add-overlay').is(':visible')) {
+                $('#add-overlay').hide();
+            } else {
+                self.clearMap();
+            }
+        }
+    });
+
 
     /////////////////////////////////
 
@@ -1620,6 +1751,7 @@ var viewModel = function() {
 
 }
 
+// Necessary to keep jQuery working
 ko.bindingHandlers.listClick = {
     init: function(element) {
         $(element).on('click', function() {
@@ -1644,7 +1776,7 @@ ko.applyBindings(new viewModel());
 
 
 
-$('input').on('focus keydown', function() {
+$('#locations-filter').on('focus keydown', function() {
     if ($(window).width() <= 1024) {
         $('.toggle-controls').css('display', 'none');
         $('.overlay, .list').css('display', 'block');
@@ -1655,6 +1787,15 @@ $('.overlay, .close-icon, .toggle-controls').on('click', function() {
     if ($(window).width() <= 1024) {
         $('.toggle-controls, .overlay, .list').toggle();
     }
+});
+
+$('#add-button').on('click', function(){
+
+    $('#add-overlay').show();
+    $('#overlay-close-button').on('click', function(){
+        $(this).parent().hide();
+    })
+
 });
 
 $('#wikipedia-button').on('click', function(){

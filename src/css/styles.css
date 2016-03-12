@@ -172,6 +172,7 @@ li:hover:not(.selected){
 	min-height: 220px;
 	position: relative;
 	padding: 3%;
+	display: none;
 }
 
 
@@ -292,6 +293,30 @@ li:hover:not(.selected){
 #flickr-gallery {
 	display: none;
 }
+
+
+#add-overlay {
+	position: fixed;
+	width: 100vw;
+	height: 100vh;
+	z-index: 99999;
+	background-color: rgba(0,0,0,0.9);
+	top: 0;
+	left: 0;
+	display: none;
+
+}
+
+
+.pac-container {
+	z-index: 999999;
+	cursor: pointer;
+}
+
+
+
+
+
 
 
 
