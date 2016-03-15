@@ -9,7 +9,7 @@
         <link type="text/css" rel="stylesheet" href="css/lightgallery.css" />
         <link rel="stylesheet" href="css/styles.css">
 
-        <script src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?libraries=places&language=en"></script>
     </head>
     <body>
 
@@ -34,7 +34,7 @@
                 <img src="img/close.png" alt="close" class="close-icon">
                 <div class="list-container">
                     <ul data-bind="foreach: filteredItems">
-                        <li class="li-item" data-bind="text: name, click: $parent.goToMarker, listClick"></li>
+                        <li class="li-item"><span data-bind="text: name, click: $parent.goToMarker, listClick"></span><span class="delete-item" data-bind="click: $parent.deleteMarker">X</span></li>
                     </ul>
                 </div>
             </div>

@@ -1307,53 +1307,13 @@ var viewModel = function() {
     self.flickrPics = ko.observableArray();
     self.filter = ko.observable('');
     self.currentLocationData = ko.observable('Loading...');
+    self.currentOpenedMarker;
     var markersFinalArray = ko.observableArray([]);
     var infoWindowHTML = $('#info-window');
 
 
 
-    // The filtering happens here
-    self.filteredItems = ko.computed(function() {
 
-        // // Close any currently open infowindow
-        self.infoWindow.close();
-
-
-        // Set the filter words specified by the user to lower case
-        var filter = self.filter().toLowerCase();
-
-        // If the filter box is empty, return the full array and show all markers
-        if (!filter) {
-            for (var i = 0; i < markersFinalArray().length; i++) {
-                markersFinalArray()[i].marker.setVisible(true);
-            }
-            return markersFinalArray();
-
-            // If the user has entered something into the filter box, use knockout's utility function 'arrayFilter' to get filtered results
-        } else {
-            return ko.utils.arrayFilter(markersFinalArray(), function(mark) {
-
-                // Loop through all the entries in the markers array
-                for (var key in markersFinalArray()) {
-
-                    // Set the marker name to lowercase to compare with filter
-                    var markerName = markersFinalArray()[key].name.toLowerCase();
-
-                    // If the result of the 'search' method is equal or more than zero, set matching markers' visibility to true
-                    if (markerName.search(filter) >= 0) {
-                        markersFinalArray()[key].marker.setVisible(true);
-
-                        // Else, hide them
-                    } else {
-                        markersFinalArray()[key].marker.setVisible(false);
-                    }
-                }
-
-                // From the markers array, return only those items that match the filter. This is used to filter the list of items, not the markers.
-                return mark.name.toLowerCase().search(filter) >= 0;
-            });
-        }
-    });
 
     // Google maps init
     var map = new google.maps.Map(document.getElementById('map'), {
@@ -1401,7 +1361,7 @@ var viewModel = function() {
                 cityLong = results[0].geometry.location.lng();
 
                 // Call our marker creator with the new marker's info
-                new createMarker(cityName, cityLat, cityLong);
+                new createMarker(cityName, cityLat, cityLong, true);
 
                 // Store the locations marker in localstorage
                 self.storeLocally();
@@ -1423,38 +1383,22 @@ var viewModel = function() {
         var storeArray = [];
 
         $.each(markers, function(k, v) {
-            var lat = v.lat;
-            var long = v.long;
-            var name = v.name;
+
 
             markerObject = {
                 name: v.name,
                 lat: v.lat,
-                long: v.long
+                long: v.long,
+                userCreated: v.userCreated
             }
 
             storeArray.push(markerObject);
-            console.log(lat, long, name);
+
         });
 
-        console.log(JSON.stringify(storeArray));
 
         localStorage.setItem('userLocalData', JSON.stringify(storeArray));
 
-
-
-       // var oldItems = JSON.parse(localStorage.getItem('itemsArray')) || [];
-
-        // var newItem = {
-        //     'product-name': name,
-        //     'product-image': image,
-        //     'product-price': price
-        // };
-
-        //oldItems.push(newItem);
-
-
-        //localStorage.setItem('userLocalData', JSON.stringify(markersFinalArray()));
 
     };
 
@@ -1468,7 +1412,9 @@ var viewModel = function() {
     });
 
     // Markers processing function
-    var createMarker = function(name, lat, long) {
+    var createMarker = function(name, lat, long, userCreated) {
+
+
 
         // Create marker with given data and add it to the final markers array
         markersFinalArray.push({
@@ -1476,11 +1422,15 @@ var viewModel = function() {
                 position: new google.maps.LatLng(lat, long),
                 title: name,
                 animation: google.maps.Animation.DROP,
-                map: map
+                map: map,
+                icon: ((userCreated)?'http://maps.google.com/mapfiles/ms/micons/blue.png':'http://maps.google.com/mapfiles/ms/micons/red.png')
+
+
             }),
             name: name,
             lat: lat,
-            long: long
+            long: long,
+            userCreated: userCreated
         });
 
         // Add click listener to the fresly created marker
@@ -1492,12 +1442,32 @@ var viewModel = function() {
         var maLong = maLast.long;
 
         maItem.addListener('click', function() {
-            self.clickOnItem(maName, maItem, maLat, maLong);
+            self.clickOnItem(maName, maItem, maLat, maLong, userCreated);
         });
     };
 
+    // Delete Marker
+    self.deleteMarker = function(clickedItem){
+        var name = clickedItem.name;
+        for (var key in markersFinalArray()) {
+            if (name === markersFinalArray()[key].name) {
+                markersFinalArray()[key].marker.setMap(null);
+                markersFinalArray().splice(key, 1);
+                markersFinalArray(markersFinalArray());
 
-    // Check if there's any local storage with data from previous sessions
+
+                self.storeLocally();
+            }
+        //map.setZoom(3);
+        }
+    };
+
+
+    // Initial markers:
+    // Check if there's any local storage with data from previous sessions and load it. Otherwise, load default markers.
+    //
+    // TO-DO: initial markers are set depending on user location
+
     if (localStorage.getItem('userLocalData') !== null) {
 
        var storedData = JSON.parse(localStorage.getItem('userLocalData'));
@@ -1506,11 +1476,12 @@ var viewModel = function() {
             var lat = v.lat;
             var long = v.long;
             var name = v.name;
+            var userCreated = v.userCreated;
 
-           new createMarker(name, lat, long);
+
+           new createMarker(name, lat, long, userCreated);
         });
 
-       console.log('localstorage loaded');
 
     } else {
 
@@ -1521,14 +1492,13 @@ var viewModel = function() {
         $.getJSON(initialLocationsURL, function(data) {
 
             var locations = data.locations;
-            console.log(locations);
 
             $.each(locations, function(k, v) {
                 var cityCountry = v.city + ', ' + v.country;
                 var latitude = v.latitude;
                 var longitude = v.longitude;
 
-                new createMarker(cityCountry, latitude, longitude);
+                new createMarker(cityCountry, latitude, longitude, false);
             });
 
             self.infoWindow.setContent(infoWindowHTML[0]);
@@ -1536,19 +1506,37 @@ var viewModel = function() {
         }).fail(function() {
             console.log('fail ajax');
         });
-        console.log('remote marker data loaded');
     }
 
 
     // Process click on a marker or list item
-    self.clickOnItem = function(name, marker, lat, long) {
+    self.clickOnItem = function(name, marker, lat, long, userCreated) {
 
         $("body").append(infoWindowHTML);
-        self.infoWindow.close();
+
+        // Close currently opened infowindows
+        self.closeInfoWindows();
+
+        self.currentLocationData(name+'|'+userCreated);
+
         $('#info-window').show();
         $('#location-info').show().siblings().hide();
 
+        var icon;
+        var userSelectedIcon = 'http://maps.google.com/mapfiles/kml/paddle/blu-stars.png';
+        var defaultSelectedIcon = 'http://maps.google.com/mapfiles/kml/paddle/red-stars.png'
+
+        if(userCreated){
+            icon = userSelectedIcon;
+        } else {
+            icon = defaultSelectedIcon;
+        }
+
+        marker.setIcon(icon);
+
+
         marker.setAnimation(google.maps.Animation.BOUNCE);
+
         setTimeout(function() {
             marker.setAnimation(null);
             self.infoWindow.open(map, marker);
@@ -1561,7 +1549,6 @@ var viewModel = function() {
 
         var apiCoords = lat + '|' + long;
 
-        self.currentLocationData(name);
 
         self.getWikiData(apiCoords, marker);
         self.getFlickrData(lat, long, name);
@@ -1576,7 +1563,10 @@ var viewModel = function() {
                 var marker = markersFinalArray()[key].marker;
                 var markerLat = markersFinalArray()[key].lat;
                 var markerLong = markersFinalArray()[key].long;
-                self.clickOnItem(markerName, marker, markerLat, markerLong);
+                var userCreated = markersFinalArray()[key].userCreated;
+
+
+                self.clickOnItem(markerName, marker, markerLat, markerLong, userCreated);
                 //self.filter(markerName); // Sets filter to cu
                 setTimeout(function() {
                     self.infoWindow.open(map, marker);
@@ -1591,9 +1581,43 @@ var viewModel = function() {
         var coords = new google.maps.LatLng(40.8333467, -48.1009912);
         map.panTo(coords);
         map.setZoom(2);
-        self.infoWindow.close();
+        self.closeInfoWindows();
         $('#info-window').hide();
         $('body').append(infoWindowHTML);
+    };
+
+    // Change Icon
+    self.closeInfoWindows = function() {
+
+
+        var currentData = self.currentLocationData().split('|');
+
+        var markerName = currentData[0];
+        var userCreated = currentData[1];
+
+
+        for (var key in markersFinalArray()) {
+            if (markerName === markersFinalArray()[key].name) {
+                var marker = markersFinalArray()[key].marker;
+
+                if(userCreated === 'true') {
+                    marker.setIcon('http://maps.google.com/mapfiles/ms/micons/blue.png');
+                } else {
+                    marker.setIcon('http://maps.google.com/mapfiles/ms/micons/red.png');
+                }
+
+                // Check if it is user created
+                // Assing icon to variable
+                // Set icon to marker
+
+
+            }
+        }
+
+
+
+
+        self.infoWindow.close();
     };
 
     google.maps.event.addListener(self.infoWindow, 'closeclick', function() {
@@ -1610,6 +1634,49 @@ var viewModel = function() {
         }
     });
 
+        // The filtering happens here
+    self.filteredItems = ko.computed(function() {
+
+        // // Close any currently open infowindow
+        self.closeInfoWindows();
+
+
+        // Set the filter words specified by the user to lower case
+        var filter = self.filter().toLowerCase();
+
+        // If the filter box is empty, return the full array and show all markers
+        if (!filter) {
+            for (var i = 0; i < markersFinalArray().length; i++) {
+                markersFinalArray()[i].marker.setVisible(true);
+            }
+            return markersFinalArray();
+
+            // If the user has entered something into the filter box, use knockout's utility function 'arrayFilter' to get filtered results
+        } else {
+            return ko.utils.arrayFilter(markersFinalArray(), function(mark) {
+
+                // Loop through all the entries in the markers array
+                for (var key in markersFinalArray()) {
+
+                    // Set the marker name to lowercase to compare with filter
+                    var markerName = markersFinalArray()[key].name.toLowerCase();
+
+                    // If the result of the 'search' method is equal or more than zero, set matching markers' visibility to true
+                    if (markerName.search(filter) >= 0) {
+                        markersFinalArray()[key].marker.setVisible(true);
+
+                        // Else, hide them
+                    } else {
+                        markersFinalArray()[key].marker.setVisible(false);
+                    }
+                }
+
+                // From the markers array, return only those items that match the filter. This is used to filter the list of items, not the markers.
+                return mark.name.toLowerCase().search(filter) >= 0;
+            });
+        }
+    });
+
     // Manage listener on 'esc' key. Closes overlay or clears map depending on context
     $(document).keyup(function (e) {
         if (e.keyCode == 27) {
@@ -1617,12 +1684,13 @@ var viewModel = function() {
                 $('#add-overlay').hide();
             } else {
                 self.clearMap();
+                self.deleteMarker(clickedItem);
             }
         }
     });
 
 
-    /////////////////////////////////
+
 
     self.getWikiData = function(coords, marker) {
 
@@ -1634,7 +1702,9 @@ var viewModel = function() {
 
         $.getJSON(wikiURL, function(data) {
 
+
             var wikiItems = data.query.pages;
+
 
             $.each(wikiItems, function(k, v) {
                 var wikiTitle = v.title;
@@ -1669,7 +1739,6 @@ var viewModel = function() {
 
     };
 
-    ////////////////////////
 
     self.getFlickrData = function(lat, long, name) {
 
@@ -1729,7 +1798,6 @@ var viewModel = function() {
             $('#flickr-button').delay(500).fadeIn(500);
 
             $('#flickr-button').on('click', function(){
-                console.log('hey');
                 $("#flickr-gallery").lightGallery({
                     dynamic: true,
                     dynamicEl: self.flickrPics()
@@ -1737,7 +1805,6 @@ var viewModel = function() {
             });
             $('#flickr-gallery').on('onBeforeClose.lg',function(event){
 
-                console.log('beforeclose');
 
                 $('#location-info').show().siblings().hide();
                 $(this).data('lightGallery').destroy(true);
@@ -1746,6 +1813,44 @@ var viewModel = function() {
         });
 
     };
+
+
+
+
+// If you created your Autocomplete with some options, like var autocompleteOptions = { componentRestrictions: { country: 'fr'}};, don't forget to re-add these options in the last line of the @amirnissim answer, as var autocomplete = new google.maps.places.Autocomplete(input, autocompleteOptions); I just have this problem and lost 1/2 hour on it. BTW, thanks for this very nice answer
+
+
+    (function pacSelectFirst(input){
+        // store the original event binding function
+        var _addEventListener = (input.addEventListener) ? input.addEventListener : input.attachEvent;
+
+        function addEventListenerWrapper(type, listener) {
+        // Simulate a 'down arrow' keypress on hitting 'return' when no pac suggestion is selected,
+        // and then trigger the original listener.
+
+        if (type == "keydown") {
+          var orig_listener = listener;
+          listener = function (event) {
+            var suggestion_selected = $(".pac-item-selected").length > 0;
+            if (event.which == 13 && !suggestion_selected) {
+              var simulated_downarrow = $.Event("keydown", {keyCode:40, which:40})
+              orig_listener.apply(input, [simulated_downarrow]);
+            }
+
+            orig_listener.apply(input, [event]);
+          };
+        }
+
+        // add the modified listener
+        _addEventListener.apply(input, [type, listener]);
+      }
+
+      if (input.addEventListener)
+        input.addEventListener = addEventListenerWrapper;
+      else if (input.attachEvent)
+        input.attachEvent = addEventListenerWrapper;
+
+    })($('#pac-input')[0]);
 
 
 
@@ -1789,14 +1894,33 @@ $('.overlay, .close-icon, .toggle-controls').on('click', function() {
     }
 });
 
+
+
+var openAddOptions = function() {
+
+
+
+        $('#add-overlay').show();
+        $('#pac-input').val('').focus();
+        $('#overlay-close-button').on('click', function(){
+            $(this).parent().hide();
+        });
+
+
+};
+
 $('#add-button').on('click', function(){
-
-    $('#add-overlay').show();
-    $('#overlay-close-button').on('click', function(){
-        $(this).parent().hide();
-    })
-
+    openAddOptions();
 });
+
+$(document).keyup(function (e) {
+    if (e.keyCode == 16) {
+       openAddOptions();
+    }
+});
+
+
+
 
 $('#wikipedia-button').on('click', function(){
     $('#wiki-window').show().siblings().hide();

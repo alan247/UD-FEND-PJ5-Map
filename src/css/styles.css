@@ -313,6 +313,23 @@ li:hover:not(.selected){
 	cursor: pointer;
 }
 
+.li-item{
+	position: relative;
+}
+
+
+.delete-item {
+	position: absolute;
+	right: 25px;
+	color: #ccc;
+	font-weight: bold;
+	cursor: pointer;
+	font-size:14px;
+}
+
+.delete-item:hover {
+	color: red;
+}
 
 
 
