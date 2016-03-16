@@ -40,7 +40,7 @@ gulp.task('bower-styles', function(){
 
 
 gulp.task('html', function(){
-	gulp.src('./src/index.html')
+	gulp.src('./src/*.html')
 		.pipe(minifyHTML({collapseWhitespace: true}))
 		.pipe(gulp.dest('./dist/'))
 		.pipe(reload({stream: true}))
@@ -81,7 +81,7 @@ gulp.task('serve', function(){
 			baseDir: "./dist/"
 		}
 	});
-	gulp.watch('./src/index.html', ['html']);
+	gulp.watch('./src/*.html', ['html']);
 	gulp.watch('./src/js/*.js', ['js']);
 	gulp.watch('./src/css/*.css', ['css']);
 	gulp.watch('./src/img/*.**', ['img']);

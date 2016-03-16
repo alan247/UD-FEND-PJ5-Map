@@ -18,9 +18,12 @@
 }
 
 #map {
-	height: calc(100vh - 107px);
+	height: 100vh;
 	z-index: 1;
-	float: left;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
 }
 
 @media (min-width: 1025px) {
@@ -63,8 +66,8 @@ input {
 .list {
 	display: none;
     position: fixed;
-    top: 157px;
-    height: calc(100vh - 207px);
+
+    height: calc(100vh);
     left: 15vw;
     border-radius: 6px;
     border: 1px solid #BFBFB9;
@@ -148,8 +151,10 @@ li:hover:not(.selected){
 	    border-radius: 0;
 	    border: 0;
 	    position: fixed;
-	    top: 107px;
+	    top: 0px;
+
 	    left: 0 !important;
+	    transition: .2s linear;
 	    z-index: 11;
 	}
 
@@ -162,6 +167,10 @@ li:hover:not(.selected){
 	}
 	ul {
 		height: calc(100vh - 107px);
+	}
+	.filter-background {
+		height: 90px;
+		background-color: blue;
 	}
 }
 
@@ -329,6 +338,16 @@ li:hover:not(.selected){
 
 .delete-item:hover {
 	color: red;
+}
+
+.filter-input {
+	z-index: 999;
+	width:250px;
+	position: fixed;
+	top: 25px;
+	left: 25px;
+	padding-bottom: 25px;
+
 }
 
 

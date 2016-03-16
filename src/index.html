@@ -14,6 +14,12 @@
     <body>
 
         <div class="overlay"></div>
+        <div id="map"></div>
+        <div class="filter-input">
+            <input id="locations-filter" type="search" data-bind="textInput: filter" placeholder="Filter locations...">
+            <span class="clear-filter" data-bind="click: clearMap"></span>
+        </div>
+
         <div class="main row">
 
 
@@ -22,15 +28,8 @@
             </div>
 
 
-            <div class="filter small-12 large-3 columns">
-                <div class="filter-input">
-                    <input id="#locations-filter" type="search" data-bind="textInput: filter" placeholder="Filter locations...">
-                    <span class="clear-filter" data-bind="click: clearMap"></span>
-                </div>
-            </div>
-
-
             <div class="list large-3 columns">
+                <div class="filter-background"></div>
                 <img src="img/close.png" alt="close" class="close-icon">
                 <div class="list-container">
                     <ul data-bind="foreach: filteredItems">
@@ -40,7 +39,7 @@
             </div>
 
 
-            <div id="map" class="small-12 large-9 columns"></div>
+
 
 
         </div>
