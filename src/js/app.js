@@ -1934,3 +1934,18 @@ $('#wikipedia-button').on('click', function(){
 $('.go-back').on('click', function(){
     $('#location-info').show().siblings().hide();
 });
+
+
+
+/////
+
+$('#show-list-button').on('click', function(){
+    console.log('sss');
+    alert('hey');
+    $('#locations-list').css('left', '0');
+});
+
+
+
+
+

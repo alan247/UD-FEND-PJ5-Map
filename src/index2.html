@@ -9,7 +9,7 @@
         <link type="text/css" rel="stylesheet" href="css/lightgallery.css" />
         <link rel="stylesheet" href="css/styles2.css">
 
-        <script src="https://maps.googleapis.com/maps/api/js?libraries=places&language=en"></script>
+       <!-- <script src="https://maps.googleapis.com/maps/api/js?libraries=places&language=en"></script> -->
     </head>
     <body>
 
@@ -17,14 +17,71 @@
 
 
 
+    <div id="map"></div>
+
+    <div class="filter-input">
+        <input id="locations-filter" type="search" data-bind="textInput: filter" placeholder="Filter locations...">
+        <span class="clear-filter" data-bind="click: clearMap"></span>
+    </div>
+
+    <div id="add-button"> + </div>
+
+    <div id="add-overlay">
+
+        <input id="pac-input" type="text" placeholder="Type location to add..." />
+
+        <span id="overlay-close-button">X</span>
+
+    </div>
+
+
+    <div id="locations-list">
+        <div id="filter-background"></div>
+        <ul>
+            <li><span class="list-item" data-bind="text: name, click: $parent.goToMarker, listClick">Berlin, Germany</span><span class="delete-item" data-bind="click: $parent.deleteMarker">X</span></li>
+            <li>Munich, Germany</li>
+            <li class="selected">Mexico City, Mexico</li>
+            <li>Bangkok, Thailand</li>
+            <li>Melbourne, Australia</li>
+        </ul>
+        <div id="show-list-button">&gt;</div>
+
+    </div>
+
+
+    <div id="location-info">
+        <div id="location-header">
+            Berlin Germany
+        </div>
+
+        <div class="api-info-container">
+            <h1>Related wikipedia articles</h1>
+
+            <ul>
+                <li>
+                    <div class="image"></div>
+                    <h2>Berlin's Wall</h2>
+                    <div class="clearfix"></div>
+                </li>
+                <li>
+                    <div class="image"></div>
+                    <h2>Berlin's Wall</h2>
+                    <div class="clearfix"></div>
+                </li>
+                <li>
+                    <div class="image"></div>
+                    <h2>Berlin's Wall</h2>
+                    <div class="clearfix"></div>
+                </li>
+            </ul>
+        </div>
+
+
+    </div>
+
     <div class="row">
 
-        <div class="small-12 columns" id="map"></div>
 
-        <div class="filter-input small-12 columns">
-            <input id="locations-filter" type="search" data-bind="textInput: filter" placeholder="Filter locations...">
-            <span class="clear-filter" data-bind="click: clearMap"></span>
-        </div>
 
     </div>
 
@@ -32,6 +89,35 @@
     <script src="js/vendors.js"></script>
    	<script src="js/app.js"></script>
 
+    <script>
+        $('#show-list-button').on('click', function(){
+            $('#locations-list').css('left', '0');
+            $('#close-list').css('display', 'block');
+        });
+
+        var openAddOptions = function() {
+
+            $('#add-overlay').show();
+            $('#pac-input').val('').focus();
+            $('#overlay-close-button').on('click', function(){
+                $(this).parent().hide();
+            });
+
+        };
+
+        $('#add-button').on('click', function(){
+            openAddOptions();
+        });
+
+        $('.delete-item').on('click', function(){
+            console.log('delete item');
+        });
+
+        $('.list-item').on('click', function(){
+            console.log('list item');
+        });
+
+    </script>
 
     </body>
 </html>
