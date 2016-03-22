@@ -7,9 +7,12 @@
         <title>PJ5</title>
         <link rel="stylesheet" href="css/vendors.css">
         <link type="text/css" rel="stylesheet" href="css/lightgallery.css" />
+        <link href='https://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
         <link rel="stylesheet" href="css/styles2.css">
 
-       <!-- <script src="https://maps.googleapis.com/maps/api/js?libraries=places&language=en"></script> -->
+        <script src="https://maps.googleapis.com/maps/api/js?libraries=places&language=en"></script>
     </head>
     <body>
 
@@ -21,30 +24,31 @@
 
     <div class="filter-input">
         <input id="locations-filter" type="search" data-bind="textInput: filter" placeholder="Filter locations...">
-        <span class="clear-filter" data-bind="click: clearMap"></span>
+        <span class="clear-filter" data-bind="click: clearMap"><i class="material-icons">close</i></span>
     </div>
 
-    <div id="add-button"> + </div>
+    <div id="add-button"><i class="material-icons">add</i> </div>
 
     <div id="add-overlay">
 
         <input id="pac-input" type="text" placeholder="Type location to add..." />
 
-        <span id="overlay-close-button">X</span>
+        <span id="overlay-close-button"><i class="material-icons">close</i></span>
 
     </div>
 
 
     <div id="locations-list">
-        <div id="filter-background"></div>
-        <ul>
-            <li><span class="list-item" data-bind="text: name, click: $parent.goToMarker, listClick">Berlin, Germany</span><span class="delete-item" data-bind="click: $parent.deleteMarker">X</span></li>
-            <li>Munich, Germany</li>
-            <li class="selected">Mexico City, Mexico</li>
-            <li>Bangkok, Thailand</li>
-            <li>Melbourne, Australia</li>
-        </ul>
-        <div id="show-list-button">&gt;</div>
+
+            <div id="filter-background"></div>
+            <div id="go-back-bar" ><i class="material-icons">arrow_back</i> <span>Return to map</span></div>
+        <div class="list-container">
+            <ul data-bind="foreach: filteredItems">
+                <li><span class="list-item" data-bind="text: name, click: $parent.goToMarker, listClick"></span><span class="delete-item" data-bind="click: $parent.deleteMarker"><i class="material-icons">delete</i></span></li>
+
+            </ul>
+        </div>
+        <div id="show-list-button"><i class="material-icons">keyboard_arrow_right</i></div>
 
     </div>
 
@@ -90,12 +94,22 @@
    	<script src="js/app.js"></script>
 
     <script>
-        $('#show-list-button').on('click', function(){
-            $('#locations-list').css('left', '0');
-            $('#close-list').css('display', 'block');
+
+        $('#locations-filter').on('focus keydown', function() {
+            $('#locations-list').css('right', '0');
         });
 
-        var openAddOptions = function() {
+        $('#show-list-button').on('click', function(){
+            $('#locations-list').css('right', '0');
+        });
+
+        $('#go-back-bar').on('click', function(){
+            $('#locations-list').css('right', '100vw');
+
+        });
+
+
+        var openAddItem = function() {
 
             $('#add-overlay').show();
             $('#pac-input').val('').focus();
@@ -106,7 +120,7 @@
         };
 
         $('#add-button').on('click', function(){
-            openAddOptions();
+            openAddItem();
         });
 
         $('.delete-item').on('click', function(){

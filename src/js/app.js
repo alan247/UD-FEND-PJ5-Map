@@ -1321,7 +1321,7 @@ var viewModel = function() {
         zoom: 2,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         disableDefaultUI: true,
-        zoomControl: true,
+        zoomControl: false,
         zoomControlOptions: {
             position: google.maps.ControlPosition.RIGHT_TOP
         }
@@ -1881,70 +1881,63 @@ ko.applyBindings(new viewModel());
 
 
 
-$('#locations-filter').on('focus keydown', function() {
-    if ($(window).width() <= 1024) {
-        $('.toggle-controls').css('display', 'none');
-        $('.overlay, .list').css('display', 'block');
-    }
-});
+// $('#locations-filter').on('focus keydown', function() {
+//     if ($(window).width() <= 1024) {
+//         $('.toggle-controls').css('display', 'none');
+//         $('.overlay, .list').css('display', 'block');
+//     }
+// });
 
-$('.overlay, .close-icon, .toggle-controls').on('click', function() {
-    if ($(window).width() <= 1024) {
-        $('.toggle-controls, .overlay, .list').toggle();
-    }
-});
-
-
-
-var openAddOptions = function() {
-
-
-
-        $('#add-overlay').show();
-        $('#pac-input').val('').focus();
-        $('#overlay-close-button').on('click', function(){
-            $(this).parent().hide();
-        });
-
-
-};
-
-$('#add-button').on('click', function(){
-    openAddOptions();
-});
-
-$(document).keyup(function (e) {
-    if (e.keyCode == 16) {
-       openAddOptions();
-    }
-});
-
-
-
-
-$('#wikipedia-button').on('click', function(){
-    $('#wiki-window').show().siblings().hide();
-});
-
-// $('#flickr-button').on('click', function(){
-//     $('#flickr-window').show().siblings().hide();
+// $('.overlay, .close-icon, .toggle-controls').on('click', function() {
+//     if ($(window).width() <= 1024) {
+//         $('.toggle-controls, .overlay, .list').toggle();
+//     }
 // });
 
 
-$('.go-back').on('click', function(){
-    $('#location-info').show().siblings().hide();
-});
+
+// var openAddOptions = function() {
+
+
+
+//         $('#add-overlay').show();
+//         $('#pac-input').val('').focus();
+//         $('#overlay-close-button').on('click', function(){
+//             $(this).parent().hide();
+//         });
+
+
+// };
+
+// $('#add-button').on('click', function(){
+//     openAddOptions();
+// });
+
+// $(document).keyup(function (e) {
+//     if (e.keyCode == 16) {
+//        openAddOptions();
+//     }
+// });
+
+
+
+
+// $('#wikipedia-button').on('click', function(){
+//     $('#wiki-window').show().siblings().hide();
+// });
+
+// // $('#flickr-button').on('click', function(){
+// //     $('#flickr-window').show().siblings().hide();
+// // });
+
+
+// $('.go-back').on('click', function(){
+//     $('#location-info').show().siblings().hide();
+// });
 
 
 
 /////
-
-$('#show-list-button').on('click', function(){
-    console.log('sss');
-    alert('hey');
-    $('#locations-list').css('left', '0');
-});
-
 
 
 
