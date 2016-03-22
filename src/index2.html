@@ -55,27 +55,36 @@
 
     <div id="location-info">
         <div id="location-header">
-            Berlin Germany
+           <i class="material-icons">close</i> <span data-bind="text: currentCityName"></span>
         </div>
 
-        <div class="api-info-container">
-            <h1>Related wikipedia articles</h1>
-
+        <div class="api-card">
+            <h1>From Wikipedia</h1>
+            <p>Check out these wikipedia articles about nearby locationsss</p>
             <ul>
-                <li>
-                    <div class="image"></div>
-                    <h2>Berlin's Wall</h2>
-                    <div class="clearfix"></div>
-                </li>
-                <li>
-                    <div class="image"></div>
-                    <h2>Berlin's Wall</h2>
-                    <div class="clearfix"></div>
-                </li>
-                <li>
-                    <div class="image"></div>
-                    <h2>Berlin's Wall</h2>
-                    <div class="clearfix"></div>
+                <div data-bind="foreach: wikiArticles">sd
+                    <a data-bind="attr: { href: url }">
+                        <li>
+                            <img data-bind="attr: {src : thumbnail}" >
+                            <div data-bind="text: title"></div>
+
+                        </li>
+                    </a>
+                </div>
+            </ul>
+            <p class="action">VIEW</p>
+        </div>
+
+        <div class="api-card">
+            <h1>From flickr</h1>
+            <div id="flickr-load" style="width: 100%;margin: 30px 0;text-align: center;">
+                <img src="img/loading-flickr.gif" style="margin-right: 0">
+                <span style="display: block">calling flickr...</span>
+            </div>
+
+            <ul id="flickr-gallery" class="small-block-grid-3" data-bind="foreach: flickrPics" >
+                <li data-bind="attr: { 'data-src': src }">
+                    <img data-bind="attr: {src: thumb, alt: subHtml}">
                 </li>
             </ul>
         </div>
@@ -101,10 +110,12 @@
 
         $('#show-list-button').on('click', function(){
             $('#locations-list').css('right', '0');
+            $(this).fadeOut();
         });
 
         $('#go-back-bar').on('click', function(){
             $('#locations-list').css('right', '100vw');
+            $('#show-list-button').fadeIn();
 
         });
 
@@ -129,6 +140,10 @@
 
         $('.list-item').on('click', function(){
             console.log('list item');
+        });
+
+        $('#location-header i').on('click', function(){
+            $('#location-info').fadeOut();
         });
 
     </script>
