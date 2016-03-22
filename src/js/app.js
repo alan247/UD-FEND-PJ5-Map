@@ -1761,7 +1761,8 @@ var viewModel = function() {
     self.wikiArticles = ko.observableArray();
     self.flickrPics = ko.observableArray();
     self.filter = ko.observable('');
-    self.currentCityName = ko.observable();
+    self.currentCityCountry = ko.observable();
+    self.currentCity = ko.observable();
     self.currentLocationData = ko.observable('Loading...');
     self.currentOpenedMarker;
     var markersFinalArray = ko.observableArray([]);
@@ -1970,10 +1971,25 @@ var viewModel = function() {
 
         $("body").append(infoWindowHTML);
 
+        $('.list-container ul li').each(function(){
+
+            var thisName = $(this).children('.list-item').html();
+
+            if(name === thisName) {
+                $(this).addClass('selected').siblings().removeClass('selected');
+            }
+
+        });
+
         // Close currently opened infowindows
         self.closeInfoWindows();
 
-        self.currentCityName(name);
+        var splitCity = name.split(',');
+
+        console.log(splitCity);
+
+        self.currentCity(splitCity[0]);
+        self.currentCityCountry(name);
         self.currentLocationData(name+'|'+userCreated);
 
         $('#info-window').show();
@@ -1996,7 +2012,7 @@ var viewModel = function() {
 
         setTimeout(function() {
             marker.setAnimation(null);
-            self.infoWindow.open(map, marker);
+            //self.infoWindow.open(map, marker);
         }, 750);
         var coords = new google.maps.LatLng(lat, long);
 
@@ -2026,7 +2042,7 @@ var viewModel = function() {
                 self.clickOnItem(markerName, marker, markerLat, markerLong, userCreated);
                 //self.filter(markerName); // Sets filter to cu
                 setTimeout(function() {
-                    self.infoWindow.open(map, marker);
+                    //self.infoWindow.open(map, marker);
                 }, 750);
             }
         }
@@ -2151,15 +2167,12 @@ var viewModel = function() {
 
     self.getWikiData = function(coords, marker) {
 
-        console.log('getwikidata called');
-        console.log(self.wikiArticles());
         // Empty wikiArticles array
         self.wikiArticles().length = 0;
 
         // Define wiki api url
         var wikiURL = 'https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages%7Cinfo&list=&generator=geosearch&piprop=thumbnail&pithumbsize=80&pilimit=4&inprop=url&ggscoord=' + coords + '&ggsradius=10000&ggslimit=4&callback=?';
 
-        console.log(wikiURL);
 
         $.getJSON(wikiURL, function(data) {
 
@@ -2191,7 +2204,6 @@ var viewModel = function() {
 
             });
 
-            console.log(self.wikiArticles);
 
             self.infoWindow.setContent(infoWindowHTML[0]);
 
@@ -2323,15 +2335,15 @@ var viewModel = function() {
 
 // Necessary to keep jQuery working
 ko.bindingHandlers.listClick = {
-    init: function(element) {
-        $(element).on('click', function() {
-            $(this).siblings().removeClass('selected');
-            $(this).addClass('selected');
-            if ($(window).width() <= 1024) {
-                $('.toggle-controls, .overlay, .list').toggle();
-            }
-        });
-    }
+    // init: function(element) {
+    //     $(element).on('click', function() {
+    //         $(this).siblings().removeClass('selected');
+    //         $(this).addClass('selected');
+    //         if ($(window).width() <= 1024) {
+    //             $('.toggle-controls, .overlay, .list').toggle();
+    //         }
+    //     });
+    // }
 };
 
 ko.applyBindings(new viewModel());

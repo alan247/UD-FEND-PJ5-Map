@@ -40,43 +40,60 @@
 
     <div id="locations-list">
 
-            <div id="filter-background"></div>
-            <div id="go-back-bar" ><i class="material-icons">arrow_back</i> <span>Return to map</span></div>
+        <div id="filter-background"></div>
+
+        <div id="go-back-bar" ><i class="material-icons">arrow_back</i> <span>Return to map</span></div>
+
         <div class="list-container">
             <ul data-bind="foreach: filteredItems">
                 <li><span class="list-item" data-bind="text: name, click: $parent.goToMarker, listClick"></span><span class="delete-item" data-bind="click: $parent.deleteMarker"><i class="material-icons">delete</i></span></li>
 
             </ul>
         </div>
-        <div id="show-list-button"><i class="material-icons">keyboard_arrow_right</i></div>
+
+        <div id="show-list-button">
+            <i class="material-icons">keyboard_arrow_right</i>
+        </div>
 
     </div>
 
 
     <div id="location-info">
         <div id="location-header">
-           <i class="material-icons">close</i> <span data-bind="text: currentCityName"></span>
+           <i class="material-icons">close</i> <span data-bind="text: currentCityCountry"></span>
         </div>
 
-        <div class="api-card">
-            <h1>From Wikipedia</h1>
-            <p>Check out these wikipedia articles about nearby locationsss</p>
+        <div class="api-card wikipedia">
+            <h1>Nearby locations on Wikipedia</h1>
+
             <ul>
-                <div data-bind="foreach: wikiArticles">sd
-                    <a data-bind="attr: { href: url }">
+                <div data-bind="foreach: wikiArticles">
+                    <a data-bind="attr: { href: url }" target="_blank">
                         <li>
                             <img data-bind="attr: {src : thumbnail}" >
-                            <div data-bind="text: title"></div>
+                            <div class="wiki-item-title" data-bind="text: title"></div>
+                            <div class="clearfix"></div>
 
                         </li>
                     </a>
                 </div>
             </ul>
-            <p class="action">VIEW</p>
+            <!--
+            <p>Check out these wikipedia articles about nearby locationsss</p>
+
+            <div id="wikipedia-list">
+                <div class="close-wikipedia">
+                    <i class="material-icons">arrow_back</i>
+                    <span>Return</span>
+                </div>
+
+
+            </div>
+            <p class="action">VIEW</p> -->
         </div>
 
         <div class="api-card">
-            <h1>From flickr</h1>
+            <h1><span data-bind="text: currentCity"></span> pictures on flickr</h1>
             <div id="flickr-load" style="width: 100%;margin: 30px 0;text-align: center;">
                 <img src="img/loading-flickr.gif" style="margin-right: 0">
                 <span style="display: block">calling flickr...</span>
@@ -106,6 +123,7 @@
 
         $('#locations-filter').on('focus keydown', function() {
             $('#locations-list').css('right', '0');
+            $('#show-list-button').fadeOut();
         });
 
         $('#show-list-button').on('click', function(){
@@ -138,12 +156,17 @@
             console.log('delete item');
         });
 
-        $('.list-item').on('click', function(){
-            console.log('list item');
-        });
 
         $('#location-header i').on('click', function(){
-            $('#location-info').fadeOut();
+            $('#location-info, #wikipedia-list').fadeOut();
+        });
+
+        $('.action').on('click', function(){
+            $('#wikipedia-list').fadeIn();
+        });
+
+        $('.close-wikipedia i').on('click', function(){
+            $('#wikipedia-list').fadeOut();
         });
 
     </script>
