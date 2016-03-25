@@ -46,7 +46,7 @@
 
         <div class="list-container">
             <ul data-bind="foreach: filteredItems">
-                <li><span class="list-item" data-bind="text: name, click: $parent.goToMarker, listClick"></span><span class="delete-item" data-bind="click: $parent.deleteMarker"><i class="material-icons">delete</i></span></li>
+                <li data-bind="click: $parent.goToMarker, listClick"><span class="list-item" data-bind="text: name"></span><span class="delete-item" data-bind="click: $parent.deleteMarker"><i class="material-icons">delete</i></span></li>
 
             </ul>
         </div>
@@ -55,56 +55,63 @@
             <i class="material-icons">keyboard_arrow_right</i>
         </div>
 
+        <div id="location-info">
+
+            <div class="close-window-button"></div>
+
+            <div id="location-header">
+               <i class="material-icons">close</i> <span data-bind="text: currentCityCountry"></span>
+            </div>
+
+            <div class="api-card wikipedia">
+                <h1>Nearby locations on Wikipedia</h1>
+
+                <ul>
+                    <div data-bind="foreach: wikiArticles">
+                        <a data-bind="attr: { href: url }" target="_blank">
+                            <li>
+                                <img data-bind="attr: {src : thumbnail}" >
+                                <div class="wiki-item-title" data-bind="text: title"></div>
+                                <div class="clearfix"></div>
+
+                            </li>
+                        </a>
+                    </div>
+                </ul>
+                <!--
+                <p>Check out these wikipedia articles about nearby locationsss</p>
+
+                <div id="wikipedia-list">
+                    <div class="close-wikipedia">
+                        <i class="material-icons">arrow_back</i>
+                        <span>Return</span>
+                    </div>
+
+
+                </div>
+                <p class="action">VIEW</p> -->
+            </div>
+
+            <div class="api-card">
+                <h1><span data-bind="text: currentCity"></span> pictures on flickr</h1>
+                <div id="flickr-load" style="width: 100%;margin: 30px 0;text-align: center;">
+                    <img src="img/loading-flickr.gif" style="margin-right: 0">
+                    <span style="display: block">calling flickr...</span>
+                </div>
+
+                <ul id="flickr-gallery" class="small-block-grid-3 medium-block-grid-5" data-bind="foreach: flickrPics" >
+                    <li data-bind="attr: { 'data-src': src }">
+                        <div class="flickr-img-container">
+                            <img data-bind="attr: {src: thumb, alt: subHtml}">
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
     </div>
 
 
-    <div id="location-info">
-        <div id="location-header">
-           <i class="material-icons">close</i> <span data-bind="text: currentCityCountry"></span>
-        </div>
 
-        <div class="api-card wikipedia">
-            <h1>Nearby locations on Wikipedia</h1>
-
-            <ul>
-                <div data-bind="foreach: wikiArticles">
-                    <a data-bind="attr: { href: url }" target="_blank">
-                        <li>
-                            <img data-bind="attr: {src : thumbnail}" >
-                            <div class="wiki-item-title" data-bind="text: title"></div>
-                            <div class="clearfix"></div>
-
-                        </li>
-                    </a>
-                </div>
-            </ul>
-            <!--
-            <p>Check out these wikipedia articles about nearby locationsss</p>
-
-            <div id="wikipedia-list">
-                <div class="close-wikipedia">
-                    <i class="material-icons">arrow_back</i>
-                    <span>Return</span>
-                </div>
-
-
-            </div>
-            <p class="action">VIEW</p> -->
-        </div>
-
-        <div class="api-card">
-            <h1><span data-bind="text: currentCity"></span> pictures on flickr</h1>
-            <div id="flickr-load" style="width: 100%;margin: 30px 0;text-align: center;">
-                <img src="img/loading-flickr.gif" style="margin-right: 0">
-                <span style="display: block">calling flickr...</span>
-            </div>
-
-            <ul id="flickr-gallery" class="small-block-grid-3" data-bind="foreach: flickrPics" >
-                <li data-bind="attr: { 'data-src': src }">
-                    <img data-bind="attr: {src: thumb, alt: subHtml}">
-                </li>
-            </ul>
-        </div>
 
 
     </div>
@@ -121,18 +128,49 @@
 
     <script>
 
-        $('#locations-filter').on('focus keydown', function() {
-            $('#locations-list').css('right', '0');
-            $('#show-list-button').fadeOut();
-        });
+    var itemsList = $('#locations-list');
+    var showListButton = $('#show-list-button');
 
-        $('#show-list-button').on('click', function(){
-            $('#locations-list').css('right', '0');
-            $(this).fadeOut();
-        });
+    var closeItemsList = function() {
+        if ($(window).width() <= 1024) {
+            itemsList.css('left', '-100vw');
+        } else {
+            itemsList.css('left', '-25vw');
+            showListButton.find('i').html('keyboard_arrow_right');
+        }
+    };
+
+    var showItemsList = function() {
+        itemsList.css('left', '0');
+        if ($(window).width() <= 1024) {
+            showListButton.fadeOut();
+        } else {
+            showListButton.find('i').html('keyboard_arrow_left');
+        }
+    };
+
+    $('#locations-filter').on('focus keydown', function() {
+        showItemsList();
+    });
+
+    $('#show-list-button').on('click', function(){
+        console.log(itemsList.css('left'));
+        if (itemsList.css('left') === '0px') {
+            console.log('should close');
+            closeItemsList();
+        } else {
+            console.log('should open');
+            showItemsList();
+        }
+    });
+
+
+
+
+
 
         $('#go-back-bar').on('click', function(){
-            $('#locations-list').css('right', '100vw');
+            $('#locations-list').css('left', '-100vw');
             $('#show-list-button').fadeIn();
 
         });
@@ -168,6 +206,7 @@
         $('.close-wikipedia i').on('click', function(){
             $('#wikipedia-list').fadeOut();
         });
+
 
     </script>
 

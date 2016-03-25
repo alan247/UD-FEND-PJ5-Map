@@ -1986,8 +1986,6 @@ var viewModel = function() {
 
         var splitCity = name.split(',');
 
-        console.log(splitCity);
-
         self.currentCity(splitCity[0]);
         self.currentCityCountry(name);
         self.currentLocationData(name+'|'+userCreated);
@@ -2018,7 +2016,7 @@ var viewModel = function() {
 
         map.panTo(coords);
         map.setZoom(5);
-        map.panBy(0, -210);
+        map.panBy(-400, -210);
 
         var apiCoords = lat + '|' + long;
 
