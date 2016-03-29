@@ -29,20 +29,15 @@
     "normalize-css": "~3.0.3",
     "knockout": "~3.4.0",
     "jquery": "~2.2.0",
-    "modernizr": "2.8.3"
+    "modernizr": "2.8.3",
+    "lightgallery": "~1.2.15"
   },
   "overrides": {
     "foundation": {
       "dependencies": null
-  //     "main": [
-		//     "scss/foundation.scss",
-		//     "js/foundation.js",
-		//     "js/foundation/foundation.joyride.js",
-		//     "js/vendor/jquery.cookie.js"
-		// ]
     },
     "modernizr": {
-    	"main": "modernizr.js"
+      "main": "modernizr.js"
     }
   }
 }

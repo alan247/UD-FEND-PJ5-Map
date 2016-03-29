@@ -4,130 +4,98 @@
         <meta charset="utf-8">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title></title>
+        <title>PJ5</title>
         <link rel="stylesheet" href="css/vendors.css">
-        <link type="text/css" rel="stylesheet" href="css/lightgallery.css" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="css/styles.css">
-
         <script src="https://maps.googleapis.com/maps/api/js?libraries=places&language=en"></script>
     </head>
     <body>
 
-        <div class="overlay"></div>
-        <div id="map"></div>
-        <div class="filter-input">
-            <input id="locations-filter" type="search" data-bind="textInput: filter" placeholder="Filter locations...">
-            <span class="clear-filter" data-bind="click: clearMap"></span>
+    <div id="map"></div>
+
+    <div class="filter-input">
+        <input id="locations-filter" type="search" data-bind="textInput: filter" placeholder="Filter locations...">
+        <span class="clear-filter" data-bind="click: clearMap"><i class="material-icons">close</i></span>
+    </div>
+
+    <div id="add-button">
+        <i class="material-icons">add</i>
+    </div>
+
+    <div id="add-overlay">
+        <input id="pac-input" type="text" placeholder="Type location to add..." />
+        <span id="overlay-close-button"><i class="material-icons">close</i></span>
+    </div>
+
+    <div id="locations-list">
+        <div id="filter-background"></div>
+
+        <div id="go-back-bar" >
+            <i class="material-icons">arrow_back</i>
+            <span>Return to map</span>
         </div>
 
-        <div class="main row">
-
-
-            <div class="toggle-controls">
-                Show list
-            </div>
-
-
-            <div class="list large-3 columns">
-                <div class="filter-background"></div>
-                <img src="img/close.png" alt="close" class="close-icon">
-                <div class="list-container">
-                    <ul data-bind="foreach: filteredItems">
-                        <li class="li-item"><span data-bind="text: name, click: $parent.goToMarker, listClick"></span><span class="delete-item" data-bind="click: $parent.deleteMarker">X</span></li>
-                    </ul>
-                </div>
-            </div>
-
-
-
-
-
+        <div class="list-container">
+            <ul data-bind="foreach: filteredItems">
+                <li data-bind="click: $parent.goToMarker, listClick">
+                    <span class="list-item" data-bind="text: name"></span>
+                    <span class="delete-item" data-bind="click: $parent.deleteMarker">
+                        <i class="material-icons">delete</i>
+                    </span>
+                </li>
+            </ul>
         </div>
 
+        <div id="show-list-button">
+            <i class="material-icons">keyboard_arrow_right</i>
+        </div>
 
-        <div id="info-window">
-            <div id="location-info">
-                <span data-bind="text: currentLocationData"></span>
-                <div class="api-buttons">
-                    <img id="wikipedia-button" src="img/wikipedia.png" style="float:left">
-
-                    <div id="flickr-load" style="width:108px; height: 108px;display: flex;justify-content: center;align-items: center; float: left">
-                        <div>
-                        <img src="img/loading-flickr.gif" style="margin-right: 0">
-                            <span style="
-                            font-size: 10px;
-                            display: block;
-                            font-weight: normal;
-                            ">calling flickr...</span>
-                        </div>
-                    </div>
-                    <img id="flickr-button" src="img/flickr.png">
-                </div>
-
+        <div id="location-info">
+            <div id="location-header">
+               <i class="material-icons">close</i>
+               <span data-bind="text: currentCityCountry"></span>
             </div>
 
-            <div id="wiki-window">
-
-                <img class="go-back" src="img/back.png">
-                Nearby places in Wikipedia
+            <div class="api-card wikipedia">
+                <h1>Nearby locations on Wikipedia</h1>
                 <ul>
                     <div data-bind="foreach: wikiArticles">
-                        <a data-bind="attr: { href: url }">
+                        <a data-bind="attr: { href: url }" target="_blank">
                             <li>
                                 <img data-bind="attr: {src : thumbnail}" >
-                                <div data-bind="text: title"></div>
-
+                                <div class="wiki-item-title" data-bind="text: title"></div>
+                                <div class="clearfix"></div>
                             </li>
                         </a>
                     </div>
                 </ul>
             </div>
 
+            <div class="api-card flickr">
+                <h1>
+                    <span data-bind="text: currentCity"></span> pictures from flickr
+                </h1>
+
+                <div id="flickr-load">
+                    <img src="img/loading-flickr.gif">
+                    <span>calling flickr...</span>
+                </div>
+
+                <ul id="flickr-gallery" class="small-block-grid-3 medium-block-grid-5 large-block-grid-3" data-bind="foreach: flickrPics">
+                    <li data-bind="attr: { 'data-src': src }">
+                        <div class="flickr-img-container">
+                            <img data-bind="attr: {src: thumb, alt: subHtml}">
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
+    </div>
 
-
-
-        <div id="flickr-gallery" data-bind="foreach: flickrPics" >
-            <a data-bind="attr: { href: src }">
-                <img data-bind="attr: {src: src, alt: subHtml}">
-            </a>
-        </div>
-
-<div id="add-button" style="
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background-color: rgb(219, 68, 55);
-    border-radius: 50%;
-    width: 56px;
-    height: 56px;
-    line-height: 53px;
-    z-index: 99999;
-    cursor: pointer;
-    text-align: center;
-    color: white;
-    font-weight: normal;
-    font-family: verdana;
-    font-size: 23px;
-">+</div>
-<div id="add-overlay" style="">
-
-     <input id="pac-input" type="text" style="width:40%; height: 50px; position: absolute;top: calc(50vh - 25px);margin: 0 auto !important;display: block;left: 30vw; z-index: 99999" placeholder="Type location to add..." />
-
-    <span id="overlay-close-button" style="display:block; position:absolute; top: 25px; right: 25px; width: 30px; height: 30px; font-size:26px; font-weight: bold; z-index: 99999; color: #ccc; cursor: pointer;">X</span>
-
-</div>
-
-
-
-
-
-
-
-        <script src="js/vendors.js"></script>
-
-       	<script src="js/app.js"></script>
-
+    <script src="js/vendors.js"></script>
+   	<script src="js/app.js"></script>
 
     </body>
 </html>
