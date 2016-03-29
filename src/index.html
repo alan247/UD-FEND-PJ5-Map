@@ -17,7 +17,7 @@
 
     <div class="filter-input">
         <input id="locations-filter" type="search" data-bind="textInput: filter" placeholder="Filter locations...">
-        <span class="clear-filter" data-bind="click: clearMap"><i class="material-icons">close</i></span>
+        <span class="clear-filter" data-bind="click: clearFilter"><i class="material-icons">close</i></span>
     </div>
 
     <div id="add-button">
@@ -39,7 +39,7 @@
 
         <div class="list-container">
             <ul data-bind="foreach: filteredItems">
-                <li data-bind="click: $parent.goToMarker, listClick">
+                <li data-bind="click: $parent.goToMarker">
                     <span class="list-item" data-bind="text: name"></span>
                     <span class="delete-item" data-bind="click: $parent.deleteMarker">
                         <i class="material-icons">delete</i>
