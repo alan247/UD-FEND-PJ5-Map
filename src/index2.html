@@ -57,7 +57,6 @@
 
         <div id="location-info">
 
-            <div class="close-window-button"></div>
 
             <div id="location-header">
                <i class="material-icons">close</i> <span data-bind="text: currentCityCountry"></span>
@@ -78,28 +77,16 @@
                         </a>
                     </div>
                 </ul>
-                <!--
-                <p>Check out these wikipedia articles about nearby locationsss</p>
-
-                <div id="wikipedia-list">
-                    <div class="close-wikipedia">
-                        <i class="material-icons">arrow_back</i>
-                        <span>Return</span>
-                    </div>
-
-
-                </div>
-                <p class="action">VIEW</p> -->
             </div>
 
-            <div class="api-card">
+            <div class="api-card flickr">
                 <h1><span data-bind="text: currentCity"></span> pictures on flickr</h1>
                 <div id="flickr-load" style="width: 100%;margin: 30px 0;text-align: center;">
                     <img src="img/loading-flickr.gif" style="margin-right: 0">
                     <span style="display: block">calling flickr...</span>
                 </div>
 
-                <ul id="flickr-gallery" class="small-block-grid-3 medium-block-grid-5" data-bind="foreach: flickrPics" >
+                <ul id="flickr-gallery" class="small-block-grid-3 medium-block-grid-5 large-block-grid-3" data-bind="foreach: flickrPics" >
                     <li data-bind="attr: { 'data-src': src }">
                         <div class="flickr-img-container">
                             <img data-bind="attr: {src: thumb, alt: subHtml}">
@@ -154,12 +141,9 @@
     });
 
     $('#show-list-button').on('click', function(){
-        console.log(itemsList.css('left'));
         if (itemsList.css('left') === '0px') {
-            console.log('should close');
             closeItemsList();
         } else {
-            console.log('should open');
             showItemsList();
         }
     });
@@ -196,7 +180,12 @@
 
 
         $('#location-header i').on('click', function(){
-            $('#location-info, #wikipedia-list').fadeOut();
+
+            // if ($(window).width() <= 1024) {
+            //     $('#locations-list').css('left', '-100vw');
+            // } else {
+                $('#location-info, #wikipedia-list').fadeOut();
+            //}
         });
 
         $('.action').on('click', function(){
