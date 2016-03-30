@@ -1,5 +1,7 @@
 var viewModel = function() {
     var self = this;
+
+    // Define observables
     self.wikiArticles = ko.observableArray();
     self.flickrPics = ko.observableArray();
     self.filter = ko.observable('');
@@ -247,6 +249,7 @@ var viewModel = function() {
         // Show location window with info from third party API's
         $('#location-info').show();
 
+        // Show list when viewportsize is less than 1024px
         if ($(window).width() <= 1024) {
             $('#locations-list').css('left', '0');
         }
