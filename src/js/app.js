@@ -247,6 +247,10 @@ var viewModel = function() {
         // Show location window with info from third party API's
         $('#location-info').show();
 
+        if ($(window).width() <= 1024) {
+            $('#locations-list').css('left', '0');
+        }
+
         // Set icon of selected item to a special starred one
         var icon;
         var userSelectedIcon = 'http://maps.google.com/mapfiles/kml/paddle/blu-stars.png';
