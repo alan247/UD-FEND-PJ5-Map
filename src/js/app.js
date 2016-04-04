@@ -48,18 +48,20 @@ var viewModel = function() {
         update: function(element, valueAccessor) {
             ko.bindingHandlers.value.update(element, valueAccessor);
               // Listens for 'enter' key. Hides the overlay and calls geocodeInput
-            self.addKeyListener = function(d, e){
-                if (e.keyCode == 13) {
 
-                    console.log('KL: ' + self.pacInput());
+        }
+    };
 
-                    $('#add-overlay').hide();
+    self.addKeyListener = function(d, e){
+        if (e.keyCode == 13) {
 
-                     setTimeout(function() {
-                        self.geocodeInput();
-                    }, 750);
-                }
-            };
+            console.log('KL: ' + self.pacInput());
+
+            $('#add-overlay').hide();
+
+             setTimeout(function() {
+                self.geocodeInput();
+            }, 1250);
         }
     };
 
@@ -238,21 +240,6 @@ var viewModel = function() {
 
     // Process click on a marker or list item
     self.clickOnItem = function(name, marker, lat, long, userCreated) {
-
-        // Manage styling. Loop through all items on the list
-        $('.list-container ul li').each(function(){
-
-            // Store html from current item in variable
-            var thisName = $(this).children('.list-item').html();
-
-            // Compare variable with name given to function
-            if(name === thisName) {
-
-                // Add 'selected' class to current item and remove it from the others
-                $(this).addClass('selected').siblings().removeClass('selected');
-            }
-
-        });
 
         // Manage icon color
         self.changeIcons();
