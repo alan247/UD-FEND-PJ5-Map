@@ -1,4 +1,6 @@
 var viewModel = function() {
+    'use strict';
+
     var self = this;
 
     // Define observables
@@ -9,6 +11,7 @@ var viewModel = function() {
     self.currentCity = ko.observable('');
     self.currentLocationData = ko.observable('');
     self.markersFinalArray = ko.observableArray([]);
+    self.pacInput = ko.observable('').extend({notify: 'always'});
 
     // Init Google Maps
     var map = new google.maps.Map(document.getElementById('map'), {
@@ -16,28 +19,56 @@ var viewModel = function() {
         zoom: 2,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         disableDefaultUI: true,
-        zoomControl: false
+        zoomControl: true,
+        zoomControlOptions: {
+            position: google.maps.ControlPosition.LEFT_BOTTOM
+        }
     });
 
     // Init Google Maps geocoder
     var geocoder = new google.maps.Geocoder();
 
-    // Init Google Maps autocomplete (useful for adding new locations)
-    var autocomplete = new google.maps.places.Autocomplete(document.getElementById('pac-input'), {
-        bounds: new google.maps.LatLngBounds(
-            new google.maps.LatLng(-90, -180),
-            new google.maps.LatLng(90, 180)),
-        types: ['(cities)'] // Limit results to only cities, due to nature of the app (avoid businesses and other irrelevant results)
-    });
+
+    // Custom binding to make autocomplete work
+    ko.bindingHandlers.autoComplete = {
+        init: function(element, valueAccessor){
+            //create autocomplete object
+            var autocomplete = new google.maps.places.Autocomplete(element, { bounds: new google.maps.LatLngBounds(new google.maps.LatLng(-90, -180), new google.maps.LatLng(90, 180)), types: ['(cities)'] });
+
+            // when user selects an address from the drop down, populate the address in the model.
+            var value = valueAccessor();
+
+            google.maps.event.addListener(autocomplete, 'place_changed', function(){
+                var place = autocomplete.getPlace();
+                value(place.formatted_address);
+            });
+
+
+        },
+        update: function(element, valueAccessor) {
+            ko.bindingHandlers.value.update(element, valueAccessor);
+              // Listens for 'enter' key. Hides the overlay and calls geocodeInput
+            self.addKeyListener = function(d, e){
+                if (e.keyCode == 13) {
+
+                    console.log('KL: ' + self.pacInput());
+
+                    $('#add-overlay').hide();
+
+                     setTimeout(function() {
+                        self.geocodeInput();
+                    }, 750);
+                }
+            };
+        }
+    };
+
 
     // Creates a marker with geocoded input which should be result of a Google Maps Places API call.
     self.geocodeInput = function() {
 
-        // Get autocomplete result by checking the value of the input
-        var address = $('#pac-input').val();
-
         // Pass the value to Google Maps' geocode method
-        geocoder.geocode( { 'address': address}, function(results, status) {
+        geocoder.geocode( { 'address': self.pacInput() }, function(results, status) {
 
             // If geocode request is succesful
             if (status == google.maps.GeocoderStatus.OK) {
@@ -79,12 +110,12 @@ var viewModel = function() {
 
         // Loop through stored markers and create an object with all its elements excluding the marker
         $.each(markers, function(k, v) {
-            markerObject = {
+            var markerObject = {
                 name: v.name,
                 lat: v.lat,
                 long: v.long,
                 userCreated: v.userCreated
-            }
+            };
 
             // Push object into the array we have for storage
             storeArray.push(markerObject);
@@ -94,14 +125,6 @@ var viewModel = function() {
         // Stringify the array and store it in the browser's local Storage
         localStorage.setItem('userLocalData', JSON.stringify(storeArray));
     };
-
-    // Listens for 'enter' key. Hides the overlay and calls geocodeInput
-    $('#pac-input').keyup(function (e) {
-        if (e.keyCode == 13) {
-            $('#add-overlay').hide();
-            self.geocodeInput();
-        }
-    });
 
     // Marker processing function
     var createMarker = function(name, lat, long, userCreated) {
@@ -257,7 +280,7 @@ var viewModel = function() {
         // Set icon of selected item to a special starred one
         var icon;
         var userSelectedIcon = 'http://maps.google.com/mapfiles/kml/paddle/blu-stars.png';
-        var defaultSelectedIcon = 'http://maps.google.com/mapfiles/kml/paddle/red-stars.png'
+        var defaultSelectedIcon = 'http://maps.google.com/mapfiles/kml/paddle/red-stars.png';
 
         // Use red or blue depending on whether the user created the marker or not
         if(userCreated){
@@ -289,7 +312,7 @@ var viewModel = function() {
         if ($(window).width() <= 1024) {
             map.panBy(0, -210);
         } else {
-            var calculatedCenter = windowWidth * .5 / 2;
+            var calculatedCenter = windowWidth * 0.5 / 2;
             map.panBy(-(calculatedCenter), -210);
         }
 
@@ -298,7 +321,7 @@ var viewModel = function() {
         self.getFlickrData(lat, long, name);
 
         // Destroy lightgallery if it exists, so that a new one can be created without issues
-        if ($('#flickr-gallery').data('lightGallery') != null) {
+        if ($('#flickr-gallery').data('lightGallery') !== null) {
             $('#flickr-gallery').data('lightGallery').destroy(true);
         }
     };
@@ -430,6 +453,10 @@ var viewModel = function() {
             // Store JSON structure in variable for easier coding
             var wikiItems = data.query.pages;
 
+            var wikiThumb,
+                wikiThumbW,
+                wikiThumbH;
+
             // Loop through received JSON
             $.each(wikiItems, function(k, v) {
                 var wikiTitle = v.title;
@@ -437,13 +464,13 @@ var viewModel = function() {
 
                 // Check if item has thumbnail and assign it's details to variables
                 if ('thumbnail' in v) {
-                    var wikiThumb = v.thumbnail.source;
-                    var wikiThumbW = v.thumbnail.width;
-                    var wikiThumbH = v.thumbnail.height;
+                    wikiThumb = v.thumbnail.source;
+                    wikiThumbW = v.thumbnail.width;
+                    wikiThumbH = v.thumbnail.height;
                 } else {
 
                     // If no thumbnail data is provided, show a "No Picture" image
-                    var wikiThumb = 'img/nopicture.gif';
+                    wikiThumb = 'img/nopicture.gif';
                 }
 
                 // Create an object with current item data
@@ -453,7 +480,7 @@ var viewModel = function() {
                     thumbnailWidth: wikiThumbW,
                     thumbnailHeight: wikiThumbH,
                     url: wikiURL
-                }
+                };
 
                 // Push created object to wikiArticles observable array
                 self.wikiArticles.push(wikiObject);
@@ -501,7 +528,7 @@ var viewModel = function() {
                 var photoServer = v.server;
                 var photoID = v.id;
                 var photoSecret = v.secret;
-                var photoOwner = v.owner;
+                //var photoOwner = v.owner;
                 var photoTitle = v.title;
 
                 // Picture source URL
@@ -511,14 +538,14 @@ var viewModel = function() {
                 var photoThumb = 'http://farm' + photoFarm + '.static.flickr.com/' + photoServer + '/' + photoID + '_' + photoSecret + '_t.jpg';
 
                 // Picture link
-                var photoURL = 'http://www.flickr.com/photos/' + photoOwner + '/' + photoID;
+                // var photoURL = 'http://www.flickr.com/photos/' + photoOwner + '/' + photoID;
 
                 // Create object
                 var flickrObject = {
                     src: photoSrc,
                     thumb: photoThumb,
                     subHtml: photoTitle
-                }
+                };
 
                 // Push object to flickrPics array
                 self.flickrPics.push(flickrObject);
@@ -557,7 +584,7 @@ var viewModel = function() {
           listener = function (event) {
             var suggestion_selected = $(".pac-item-selected").length > 0;
             if (event.which == 13 && !suggestion_selected) {
-              var simulated_downarrow = $.Event("keydown", {keyCode:40, which:40})
+              var simulated_downarrow = $.Event("keydown", {keyCode:40, which:40});
               orig_listener.apply(input, [simulated_downarrow]);
             }
 
@@ -576,10 +603,23 @@ var viewModel = function() {
 
     })($('#pac-input')[0]);
 
-}
+
+
+
+
+
+
+
+};
 
 // APPLY BINDINGS AND LET MAGIC HAPPEN!!
-ko.applyBindings(new viewModel());
+function googleSuccess() {
+    ko.applyBindings(new viewModel());
+}
+
+function googleError() {
+    $('body').html('<div class="gmaps-error">Google Maps couldn\'t be loaded :/</div>');
+}
 
 // Jquery magic happens here
 var itemsList = $('#locations-list');

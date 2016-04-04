@@ -1,5 +1,6 @@
-html, body {
-	font-family: 'Roboto', sans-serif;
+html,
+body {
+	font-family: "Roboto", sans-serif;
 }
 
 ul {
@@ -160,12 +161,13 @@ ul {
     width: 100%;
     background-color: #768DCE;
     color: #fff;
-    position:absolute;
+    position: absolute;
     top: calc(20vw + 35px);
     font-size: 20px;
     padding-left: 40px;
     z-index: 4;
     vertical-align: middle;
+    cursor: pointer;
 }
 
 @media (min-width: 550px) and (max-width: 1024px) {
@@ -247,7 +249,7 @@ ul {
     overflow: hidden;
 }
 
-#locations-list .selected{
+#locations-list .selected {
 	background-color: #d7d7d7;
 }
 
@@ -311,7 +313,7 @@ ul {
 }
 
 #overlay-close-button {
-	position:absolute;
+	position: absolute;
 	top: 15px;
 	right: 15px;
 	font-size:26px;
@@ -557,4 +559,14 @@ ul {
 
 .material-icons {
 	font-size: 20px;
+}
+
+.gmaps-error {
+	font-size: 50px;
+	color: #666;
+	width: 100vw;
+	height: 100vh;
+	text-align: center;
+	line-height: 100vh;
+	font-weight: bold;
 }
