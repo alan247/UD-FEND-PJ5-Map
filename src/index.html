@@ -15,20 +15,20 @@
     <div id="map"></div>
 
     <div class="filter-input">
-        <input id="locations-filter" type="search" data-bind="textInput: filter" placeholder="Filter locations...">
+        <input id="locations-filter" type="search" data-bind="textInput: filter, hasFocus: filterFocus" placeholder="Filter locations...">
         <span class="clear-filter" data-bind="click: clearFilter"><i class="material-icons">close</i></span>
     </div>
 
-    <div id="add-button">
+    <div id="add-button" data-bind="click: showAddOverlay">
         <i class="material-icons">add</i>
     </div>
 
-    <div id="add-overlay">
-        <input id="pac-input" type="text" data-bind="autoComplete: pacInput, event: { keyup: addKeyListener }" placeholder="Type location to add..." />
-        <span id="overlay-close-button"><i class="material-icons">close</i></span>
+    <div id="add-overlay" data-bind="visible: addOverlayVisible()">
+        <input id="pac-input" type="text" data-bind="autoComplete: pacInput, event: { keyup: addKeyListener }, hasFocus: addInputFocus" placeholder="Type location to add..." />
+        <span id="overlay-close-button" data-bind="click: hideAddOverlay"><i class="material-icons">close</i></span>
     </div>
 
-    <div id="locations-list">
+    <div id="locations-list" data-bind="css: { visible: listVisible() }">
         <div id="filter-background"></div>
 
         <div id="go-back-bar" >
@@ -48,12 +48,12 @@
         </div>
 
         <div id="show-list-button">
-            <i class="material-icons">keyboard_arrow_right</i>
+            <i class="material-icons" data-bind="html: arrowButton">keyboard_arrow_right</i>
         </div>
 
-        <div id="location-info">
+        <div id="location-info" data-bind="visible: infoVisible">
             <div id="location-header">
-               <i class="material-icons">close</i>
+               <i data-bind="click: closeInfoWindow" class="material-icons">close</i>
                <span data-bind="text: currentCityCountry"></span>
             </div>
 

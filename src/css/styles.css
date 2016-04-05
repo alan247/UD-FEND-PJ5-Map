@@ -100,6 +100,10 @@ ul {
 	transition: .2s linear;
 }
 
+#locations-list.visible {
+	left: 0;
+}
+
 @media (min-width: 1024px) {
 	#locations-list {
 		left: -25vw;
@@ -294,7 +298,10 @@ ul {
 	background-color: rgba(255,255,255,.95);
 	top: 0;
 	left: 0;
-	display: none;
+}
+
+#add-overlay.visible {
+	display: block;
 }
 
 #pac-input {
@@ -334,7 +341,7 @@ ul {
 	position: absolute;
 	background: #f1f1f1;
 	top: 0;
-	display: none;
+	/*display: none;*/
 	z-index: 6;
 }
 

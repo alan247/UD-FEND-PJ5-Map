@@ -12,6 +12,13 @@ var viewModel = function() {
     self.currentLocationData = ko.observable('');
     self.markersFinalArray = ko.observableArray([]);
     self.pacInput = ko.observable('').extend({notify: 'always'});
+    self.infoVisible = ko.observable(false);
+    self.listVisible = ko.observable(false);
+    self.addOverlayVisible = ko.observable(false);
+    self.addInputFocus = ko.observable(false);
+    self.arrowButton = ko.observable('keyboard_arrow_right');
+    self.filterFocus = ko.observable(false);
+
 
     // Init Google Maps
     var map = new google.maps.Map(document.getElementById('map'), {
@@ -47,17 +54,23 @@ var viewModel = function() {
         },
         update: function(element, valueAccessor) {
             ko.bindingHandlers.value.update(element, valueAccessor);
-              // Listens for 'enter' key. Hides the overlay and calls geocodeInput
-
         }
+    };
+
+
+    self.showAddOverlay = function() {
+        self.addOverlayVisible(true);
+        self.addInputFocus(true);
+    };
+
+    self.hideAddOverlay = function() {
+        self.addOverlayVisible(false);
     };
 
     self.addKeyListener = function(d, e){
         if (e.keyCode == 13) {
 
-            console.log('KL: ' + self.pacInput());
-
-            $('#add-overlay').hide();
+            self.hideAddOverlay();
 
              setTimeout(function() {
                 self.geocodeInput();
@@ -257,12 +270,7 @@ var viewModel = function() {
         self.currentLocationData(name+'|'+userCreated);
 
         // Show location window with info from third party API's
-        $('#location-info').show();
-
-        // Show list when viewportsize is less than 1024px
-        if ($(window).width() <= 1024) {
-            $('#locations-list').css('left', '0');
-        }
+        self.openInfoWindow();
 
         // Set icon of selected item to a special starred one
         var icon;
@@ -308,10 +316,26 @@ var viewModel = function() {
         self.getFlickrData(lat, long, name);
 
         // Destroy lightgallery if it exists, so that a new one can be created without issues
-        if ($('#flickr-gallery').data('lightGallery') !== null) {
+        if ($('#flickr-gallery').data('lightGallery') !== undefined) {
             $('#flickr-gallery').data('lightGallery').destroy(true);
         }
     };
+
+
+    // Show location info window
+    self.openInfoWindow = function() {
+        self.infoVisible(true);
+        self.listVisible(true);
+        self.arrowButton('keyboard_arrow_left');
+    };
+
+    // Close location info window
+    self.closeInfoWindow = function() {
+        self.infoVisible(false);
+        self.listVisible(false);
+        self.arrowButton('keyboard_arrow_right');
+    };
+
 
     // Function accesed from the VIEW. Uses the name from the clicked item on the list and calls clickOnItem() with its data.
     self.goToMarker = function(clickedItem) {
@@ -344,7 +368,7 @@ var viewModel = function() {
     };
 
     // 'ESC' key listener when filter is on focus. It  calls clearFilter()
-    if ($('#locations-filter').is(':focus')) {
+    if (self.filterFocus()) {
         if (e.keyCode == 27) {
             self.clearFilter();
         }
@@ -589,21 +613,14 @@ var viewModel = function() {
         input.attachEvent = addEventListenerWrapper;
 
     })($('#pac-input')[0]);
-
-
-
-
-
-
-
-
 };
 
-// APPLY BINDINGS AND LET MAGIC HAPPEN!!
+// Check if Google Maps loaded correctly. If so... APPLY BINDINGS AND LET MAGIC HAPPEN!!
 function googleSuccess() {
     ko.applyBindings(new viewModel());
 }
 
+// React when Google Maps fails to load for whatever reason
 function googleError() {
     $('body').html('<div class="gmaps-error">Google Maps couldn\'t be loaded :/</div>');
 }
@@ -615,16 +632,16 @@ var showListButton = $('#show-list-button');
 // Function to close items list. Acts differentely depending on viewport size
 var closeItemsList = function() {
     if ($(window).width() <= 1024) {
-        itemsList.css('left', '-100vw');
+        itemsList.removeClass('visible');
     } else {
-        itemsList.css('left', '-25vw');
+        itemsList.removeClass('visible');
         showListButton.find('i').html('keyboard_arrow_right');
     }
 };
 
 // Function to show items list
 var showItemsList = function() {
-    itemsList.css('left', '0');
+    itemsList.addClass('visible');
     if ($(window).width() <= 1024) {
         showListButton.fadeOut();
     } else {
@@ -652,21 +669,9 @@ $('#go-back-bar').on('click', function(){
     $('#show-list-button').fadeIn();
 });
 
-// Function called to display input allowing new marker addition
-var openAddItem = function() {
-    $('#add-overlay').show();
-    $('#pac-input').val('').focus();
-    $('#overlay-close-button').on('click', function(){
-        $(this).parent().hide();
-    });
-};
 
-// Call openAddItem when add button is clicked
+// Clear input when add button is clicked
 $('#add-button').on('click', function(){
-    openAddItem();
+    $('#pac-input').val('')
 });
 
-// Close location info window when close button is clicked
-$('#location-header i').on('click', function(){
-    $('#location-info, #wikipedia-list').fadeOut();
-});
